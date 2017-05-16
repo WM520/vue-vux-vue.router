@@ -1,8 +1,8 @@
 # qingzhi
+### 项目背景介绍
+##### 南京白驹文化传播有限公司 成立于2016年， 2017年3月初完成天使轮融资数百万元， 公司主营业务为健康知识教学服务。 公司打造核心产品“青枝”APP, 是一个权威专家在线的健康知识服务平台，
 
-> A Vue.js project
-
-## Build Setup
+## 运行项目之前需要在终端安装依赖
 
 ``` bash
 # install dependencies
@@ -29,4 +29,4 @@ npm test
 
 # 主要的技术栈
 
-For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+
