@@ -18,30 +18,45 @@
 			      </div>
     			</scroller>
 		</group>
+		<transition name="fade">
+			<modalbank v-show="modalshow" @commitAction="commitAction" @hideGiveFriend="hideGiveFriend"></modalbank>
+		</transition>
 	</div>
 </template>
 <script type="text/javascript">
 import { Cell, Group, Scroller } from 'vux';
 import WalletCell from '@/components/myteacher/walletCell';
+import modalbank from '@/components/common/modalbank';
 	export default {
 		data() {
 			return {
 				money: 900,
-				title: '账户余额'
+				title: '账户余额',
+				modalshow: false
 			};
 		},
 		components: {
 			Cell,
 			Group,
 			walletcell: WalletCell,
-			Scroller
+			Scroller,
+			modalbank
 		},
 		methods: {
 			onScroll(pos) {
 				this.scrollTop = pos.top;
 			},
 			getFeedback() {
+				this.modalshow = true;
 				console.log('提现操作');
+			},
+			commitAction() {
+				this.modalshow = false;
+				console.log('提交提现');
+			},
+			hideGiveFriend() {
+				this.modalshow = false;
+				console.log('提现取消');
 			}
 		},
 		mounted() {
