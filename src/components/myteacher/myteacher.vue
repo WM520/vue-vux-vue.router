@@ -16,7 +16,7 @@
 		<ul class="myteacher-withdrawals-box">
 			<li><router-link to="mywallet"><img src="../../assets/wallet.png"><span class="myteacher-withdrawals-number">1500<span class="myteacher-withdrawals-individual">&nbsp;元</span></span></router-link></li>
 			
-			<li><img src="../../assets/wallet.png"><span class="myteacher-withdrawals-number">2<span class="myteacher-withdrawals-individual">&nbsp;条</span></span></li>
+			<li><router-link to="mycourse"><img src="../../assets/directSeeding.png"><span class="myteacher-withdrawals-number">2<span class="myteacher-withdrawals-individual">&nbsp;条</span></span></router-link></li>
 		</ul>
 
 		<!-- 隔断块 -->
@@ -24,7 +24,7 @@
 
 		<!-- 讲师介绍 -->
 		<div class="myteacher-AboutInstructor-box">
-			<img src="../../assets/teacher.png" height="15" width="16">
+			<img src="../../assets/DSIntroduce.png" height="15" width="16">
 			<span>讲师介绍</span>
 		</div>
 

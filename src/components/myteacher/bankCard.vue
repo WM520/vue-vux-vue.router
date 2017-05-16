@@ -28,37 +28,37 @@
 			}
 		},
 		created() {
-			setTimeOut(() => {
-				if (this.$refs.child) {
-					let x, y, X, Y, swipeX, swipeY;
-					element.addEventListener('touchstart', e => {
-						x = e.changeTouches[0].pageX;
-						y = e.changeTouches[0].pageY;
-						swipeX = true;
-						swipeY = true;
-						this.isSwipe = false;
-					});
-					element.addEventListener('touchmove', e => {
-						X = event.changeTouches[0].pageX;
-						Y = event.changeTouches[0].pageY;
-						if (swipeX && Math.abs(X - x) - Math.abs(Y - y) > 0) {
-							e.stopPropagation();
-							if (X - x > 10) {
-								e.preventDefault();
-								this.isSwipe = false;
-							};
-							if (x - X > 10) {
-								e.preventDefault();
-								this.isSwipe = true;
-							};
-							swipeY = false;
-						};
-						if (swipeY && Math.abs(X - x) - Math.abs(Y - y) < 0) {
-							swipeX = false;
-						};
-					});
-				};
-			}, 1000);
+			// setTimeOut(() => {
+			// 	if (this.$refs.child) {
+			// 		let x, y, X, Y, swipeX, swipeY;
+			// 		element.addEventListener('touchstart', e => {
+			// 			x = e.changeTouches[0].pageX;
+			// 			y = e.changeTouches[0].pageY;
+			// 			swipeX = true;
+			// 			swipeY = true;
+			// 			this.isSwipe = false;
+			// 		});
+			// 		element.addEventListener('touchmove', e => {
+			// 			X = event.changeTouches[0].pageX;
+			// 			Y = event.changeTouches[0].pageY;
+			// 			if (swipeX && Math.abs(X - x) - Math.abs(Y - y) > 0) {
+			// 				e.stopPropagation();
+			// 				if (X - x > 10) {
+			// 					e.preventDefault();
+			// 					this.isSwipe = false;
+			// 				};
+			// 				if (x - X > 10) {
+			// 					e.preventDefault();
+			// 					this.isSwipe = true;
+			// 				};
+			// 				swipeY = false;
+			// 			};
+			// 			if (swipeY && Math.abs(X - x) - Math.abs(Y - y) < 0) {
+			// 				swipeX = false;
+			// 			};
+			// 		});
+			// 	};
+			// }, 1000);
 		}
 	};
 </script>

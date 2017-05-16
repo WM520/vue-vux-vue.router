@@ -2,77 +2,114 @@
 	<div class="myorder-box">
 		<!-- 导航栏部分 -->
 		<div class="myorder-Nav-box">
-			<ul class="myorder-Nav-text-box">
-				<li>普通</li>
-				<li>赠礼</li>
-				<li>拼课</li>
-			</ul>
+			<tab>
+		      <tab-item selected @on-item-click="onItemClick">已发货</tab-item>
+		      <tab-item @on-item-click="onItemClick">未发货</tab-item>
+		      <tab-item @on-item-click="onItemClick">全部订单</tab-item>
+    		</tab>
 		</div>
 
 
-		<!-- 订单号部分 -->
-		<div class="myorder-orderNumber-box">
-			<!-- 订单号部分 -->
-			<span class="myorder-orderNumber">
-				订单号:20170016254
-			</span>
-
-			<!-- 已经领取部分 -->
-			<span class="myorder-orderNumber-text">
-				已领取光
-			</span>
-		</div>
+	
 
 		<!-- 介绍部分 -->
 		<router-link to="orderdetails">
-			<div class="myorder-topImgDiv">
-				<img src="../../assets/grain.jpg" alt="" class="myorder-imgGrain">
-				
-				<div class="myorder-introduceText">多吃谷物少吃菜,日常生活中的养生之道。谷肉果菜，食养尽之，无使过之，伤其正也。</div>
-				<span class="myorder-introduceFoodText">饮食养生其实就是让身体的本能去顺应...</span>
-				<img src="../../assets/lecturer@2x.png" class="myorder-userIcon">
-				<span class="myorder-userName">曲黎敏</span>
-				<img src="../../assets/heat@2x.png" class="myorder-fire">
-				<span class="myorder-fireNumber">234567次</span>
-				<span class="myorder-money">￥300</span>
-				<img src="../../assets/zengli.png" height="12" width="12" class="myorder-gift-icon">
-				<span class="myorder-gift-number">5<span>份</span></span>
-			</div>
+			<ul>
+				<li v-for="item in orderList">
+						<!-- 订单号部分 -->
+					<div class="myorder-orderNumber-box">
+						<!-- 订单号部分 -->
+						<span class="myorder-orderNumber">
+							订单号:20170016254
+						</span>
+
+						<!-- 已经领取部分 -->
+						<span class="myorder-orderNumber-text">
+							已领取光
+						</span>
+					</div>
+					<div class="myorder-topImgDiv">
+						<img :src="item.imgUrl" alt="" class="myorder-imgGrain">
+						
+						<div class="myorder-introduceText" >{{ item.title }}</div>
+						<span class="myorder-introduceFoodText">{{ item.introduceText }}</span>
+						<img src="../../assets/lecturer@2x.png" class="myorder-userIcon">
+						<span class="myorder-userName">{{ item.name }}</span>
+						<img src="../../assets/heat@2x.png" class="myorder-fire">
+						<span class="myorder-fireNumber">{{ item.browseCount }}</span>
+						<span class="myorder-money">{{ item.price }}</span>
+						<img src="../../assets/zengli.png" height="12" width="12" class="myorder-gift-icon">
+						<span class="myorder-gift-number">5<span>份</span></span>
+					</div>
+				</li>
+			</ul>
 		</router-link>
-
-		<!-- 第二块订单号部分 -->
-		<div class="myorder-orderNumber-box">
-			<!-- 订单号部分 -->
-			<span class="myorder-orderNumber">
-				订单号:20170016254
-			</span>
-
-			<!-- 已经领取部分 -->
-			<span class="myorder-orderNumber-Unclaimed">
-				2份未领取
-			</span>
-		</div>
-
-		<!-- 第二块介绍部分 -->
-		<div class="myorder-topImgDiv">
-			<img src="../../assets/grain.jpg" alt="" class="myorder-imgGrain">
-			
-			<div class="myorder-introduceText">多吃谷物少吃菜,日常生活中的养生之道。谷肉果菜，食养尽之，无使过之，伤其正也。</div>
-			<span class="myorder-introduceFoodText">饮食养生其实就是让身体的本能去顺应...</span>
-			<img src="../../assets/lecturer@2x.png" class="myorder-userIcon">
-			<span class="myorder-userName">曲黎敏</span>
-			<img src="../../assets/heat@2x.png" class="myorder-fire">
-			<span class="myorder-fireNumber">234567次</span>
-			<span class="myorder-money">￥300</span>
-			<img src="../../assets/zengli.png" height="12" width="12" class="myorder-gift-icon">
-			<span class="myorder-gift-number">5<span>份</span></span>
-		</div>
-
-
-
 	</div>
 </template>
-<script type="text/javascript"></script>
+<script type="text/javascript">
+import { Tab, TabItem } from 'vux';
+	export default {
+		data() {
+			return {
+				orderList: [{
+				imgUrl: require('../../assets/grain.jpg'),
+				title: '多吃谷物少吃菜,日常生活中的养生之道。谷肉果菜，食养尽之，无使过之，伤其正也。',
+				introduceText: '饮食养生其实就是让身体的本能去顺应...',
+				userName: '曲黎敏',
+				browseCount: '10000',
+				price: '$200'
+				}, {
+				imgUrl: require('../../assets/grain.jpg'),
+				title: '多吃谷物少吃菜,日常生活中的养生之道。谷肉果菜，食养尽之，无使过之，伤其正也。',
+				introduceText: '饮食养生其实就是让身体的本能去顺应...',
+				userName: '曲黎敏',
+				browseCount: '10000',
+				price: '$200'
+				}]
+			};
+		},
+		components: {
+			Tab,
+			TabItem
+		},
+		methods: {
+			onItemClick(val) {
+				if (val === 0) {
+					this.orderList.pop();
+				} else if (val === 1) {
+					var item = {
+								imgUrl: require('../../assets/grain.jpg'),
+								title: '多吃谷物少吃菜,日常生活中的养生之道。谷肉果菜，食养尽之，无使过之，伤其正也。',
+								introduceText: '饮食养生其实就是让身体的本能去顺应...',
+								userName: '曲黎敏',
+								browseCount: '10000',
+								price: '$200'
+							};
+					this.orderList.push(item);
+				} else if (val === 2) {
+					var item1 = {
+								imgUrl: require('../../assets/grain.jpg'),
+								title: '多吃谷物少吃菜,日常生活中的养生之道。谷肉果菜，食养尽之，无使过之，伤其正也。',
+								introduceText: '饮食养生其实就是让身体的本能去顺应...',
+								userName: '曲黎敏',
+								browseCount: '10000',
+								price: '$200'
+								};
+					var item2 = {
+								imgUrl: require('../../assets/grain.jpg'),
+								title: '多吃谷物少吃菜,日常生活中的养生之道。谷肉果菜，食养尽之，无使过之，伤其正也。',
+								introduceText: '饮食养生其实就是让身体的本能去顺应...',
+								userName: '曲黎敏',
+								browseCount: '10000',
+								price: '$200'
+							};
+					this.orderList.push(item1);
+					this.orderList.push(item2);
+				};
+			}
+		}
+	};
+</script>
 <style type="text/css">
 	body{
 		background-color:#fafafa;

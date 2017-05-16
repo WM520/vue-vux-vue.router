@@ -9,6 +9,8 @@ import router from './router';
 // import 'muse-ui/dist/muse-ui.css';
 import VueResource from 'vue-resource';
 // import '../common/stylus/index.styl'
+import { AjaxPlugin } from 'vux';
+Vue.use(AjaxPlugin);
 
 Vue.config.productionTip = false;
 // Vue.use(Mint);
