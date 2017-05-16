@@ -109,5 +109,5 @@ export default {
 					line-height: 20px
 					padding-top: 15px
 					padding-left: 12%
-					font-size: 20px	
+					font-size: 20px
 </style>

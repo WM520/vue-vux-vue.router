@@ -15,6 +15,7 @@ import MyWallet from '@/components/myteacher/wallet';
 import Particulars from '@/components/myteacher/particulars';
 import AddBankCard from '@/components/myteacher/addBankCard';
 import BankCard from '@/components/myteacher/bankCard';
+import LiveAudio from '@/components/liveaudio/liveaudio';
 
 Vue.use(Router);
 
@@ -94,6 +95,11 @@ export default new Router({
       path: '/orderdetails',
       name: 'OrderDetails',
       component: OrderDetails
+    },
+    {
+      path: '/liveaudio',
+      name: 'LiveAudio',
+      component: LiveAudio
     }
   ]
 });

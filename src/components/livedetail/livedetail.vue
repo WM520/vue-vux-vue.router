@@ -31,10 +31,11 @@
   		</div>
   		<ul>
   			<li>
-  				<div class="arrangeList">
-  					<span class="text">多吃谷物少吃菜，日常生活中的养生之道。。。<br>2017.03.16 16:00-17.00</span>
-  					
-  				</div>
+  				<router-link to="liveaudio">
+	  				<div class="arrangeList">
+	  					<span class="text">多吃谷物少吃菜，日常生活中的养生之道。。。<br>2017.03.16 16:00-17.00</span>
+	  				</div>
+  				</router-link>
   			</li>
   		</ul>
   	</div>
