@@ -3,9 +3,9 @@
 		<!-- 导航栏部分 -->
 		<div class="myorder-Nav-box">
 			<tab>
-		      <tab-item selected @on-item-click="onItemClick">已发货</tab-item>
-		      <tab-item @on-item-click="onItemClick">未发货</tab-item>
-		      <tab-item @on-item-click="onItemClick">全部订单</tab-item>
+		      <tab-item selected @on-item-click="onItemClick">普通</tab-item>
+		      <tab-item @on-item-click="onItemClick">赠礼</tab-item>
+		      <tab-item @on-item-click="onItemClick">评课</tab-item>
     		</tab>
 		</div>
 

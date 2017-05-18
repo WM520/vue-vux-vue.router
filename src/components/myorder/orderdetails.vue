@@ -13,12 +13,14 @@
 
 
 		<!-- 讲师 -->
-		<div class="orderdetails-teacher">
-			<!-- <div class="orderdetails-teacher-box"></div> -->
-			<img src="../../assets/LF.jpg" class="orderdetails-teacher-portrait">
-			<span>曲黎敏<span>讲师</span></span>
-			<img src="../../assets/Arrow.png" height="12" width="8" alt="" class="orderdetails-teacher-arrow">
-		</div>
+		<router-link to="myteacher">
+			<div class="orderdetails-teacher">
+				<!-- <div class="orderdetails-teacher-box"></div> -->
+				<img src="../../assets/LF.jpg" class="orderdetails-teacher-portrait">
+					<span>曲黎敏<span>讲师</span></span>
+				<img src="../../assets/Arrow.png" height="12" width="8" alt="" class="orderdetails-teacher-arrow">
+			</div>
+		</router-link>
 		<!-- 直播安排部分 -->
 		<div class="orderdetails-arrange-box">
 			<img src="../../assets/arrange.png" height="15" width="16" alt="">
@@ -26,21 +28,14 @@
 		</div>
 
 		<!-- 多吃谷物文字部分 -->
-		<div class="orderdetails-grain-box">
-			<span>多吃谷物少吃菜，日常生活的养生之道...</span>
-			<span>2017.03.16&nbsp;16:00-2017.03.16&nbsp;17:00</span>
-		</div>
-
-		<div class="orderdetails-grain-box">
-			<span>多吃谷物少吃菜，日常生活的养生之道...</span>
-			<span>2017.03.16&nbsp;16:00-2017.03.16&nbsp;17:00</span>
-		</div>
-
-		<div class="orderdetails-grain-box">
-			<span>多吃谷物少吃菜，日常生活的养生之道...</span>
-			<span>2017.03.16&nbsp;16:00-2017.03.16&nbsp;17:00</span>
-		</div>
-
+		<ul>
+			<li v-for="item in liveList">
+				<div class="orderdetails-grain-box">
+					<span>多吃谷物少吃菜，日常生活的养生之道...</span>
+					<span>2017.03.16&nbsp;16:00-2017.03.16&nbsp;17:00</span>
+				</div>
+			</li>
+		</ul>
 		
 		<!-- 拼课状态 拼课价钱 拼课规模部分 -->
 		<div class="orderdetails-state-box">
@@ -69,30 +64,18 @@
 
 
 		<!-- 微信名部分 -->
-		<div class="orderdetails-WXNameBox">
-			<div class="orderdetails-WXImgBox">
-      			<img src="../../assets/LF.jpg" class="orderdetails-WXImg">
-			</div>
-			<span class="orderdetails-WXNameText">微信名</span>
-			<span class="orderdetails-WXDate">2017-05-15&nbsp;&nbsp;09:15:37</span>
-			<span class="orderdetails-success-T">拼课成功</span>
-		</div>
-		<div class="orderdetails-WXNameBox">
-			<div class="orderdetails-WXImgBox">
-      			<img src="../../assets/LF.jpg" class="orderdetails-WXImg">
-			</div>
-			<span class="orderdetails-WXNameText">微信名</span>
-			<span class="orderdetails-WXDate">2017-05-15&nbsp;&nbsp;09:15:37</span>
-			<span class="orderdetails-success-T">拼课成功</span>
-		</div>
-		<div class="orderdetails-WXNameBox">
-			<div class="orderdetails-WXImgBox">
-      			<img src="../../assets/LF.jpg" class="orderdetails-WXImg">
-			</div>
-			<span class="orderdetails-WXNameText">微信名</span>
-			<span class="orderdetails-WXDate">2017-05-15&nbsp;&nbsp;09:15:37</span>
-			<span class="orderdetails-success-T">拼课成功</span>
-		</div>
+		<ul>
+			<li v-for="item in liveList">
+				<div class="orderdetails-WXNameBox">
+					<div class="orderdetails-WXImgBox">
+		      			<img src="../../assets/LF.jpg" class="orderdetails-WXImg">
+					</div>
+					<span class="orderdetails-WXNameText">微信名</span>
+					<span class="orderdetails-WXDate">2017-05-15&nbsp;&nbsp;09:15:37</span>
+					<span class="orderdetails-success-T">拼课成功</span>
+				</div>
+			</li>
+		</ul>
 
 		<!-- 下单时间部分 -->
 		<div class="orderdetails-places">
@@ -113,11 +96,12 @@
 	</div>
 </template>
 <script type="text/javascript">
-	// import { Cell } from 'vux';
 	export default {
-		// components: {
-		// 	Cell
-		// }
+		data() {
+			return {
+				liveList: [{}, {}]
+			};
+		}
 	};
 </script>
 <style type="text/css">

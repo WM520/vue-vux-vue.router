@@ -6,11 +6,14 @@ import router from './router';
 import VueResource from 'vue-resource';
 // 网络框架
 import { AjaxPlugin } from 'vux';
+import { InfiniteScroll } from 'mint-ui';
+import infinite from './components/home/infiniteScroll';
 
 Vue.use(AjaxPlugin);
 Vue.config.productionTip = false;
 Vue.use(VueResource);
-
+Vue.use(InfiniteScroll);
+Vue.component(infinite.name, infinite);
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

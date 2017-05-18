@@ -5,7 +5,7 @@
 			<div class="liveaudio-play">
 				<div class="liveaudio-triangle"></div>
 			</div>
-			<img src="../../assets/Health.jpg" class="liveaudio-top-img">
+			<img src="../../assets/Health.jpg" class="liveaudio-top-img" @click="controlAudio">
 		</div>
 
 		<!-- 进度条部分 -->
@@ -65,6 +65,11 @@
 			return {
 				data1: 30
 			};
+		},
+		methods: {
+			controlAudio() {
+				console.log('开始暂停');
+			}
 		}
 	};
 

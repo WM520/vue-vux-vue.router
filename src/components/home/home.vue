@@ -1,5 +1,5 @@
 <template>
-	<div class="homeContent">
+	<div class="homeContent" ref="home">
 		<div v-if="tabbarSelect.info === '首页'">
 			<v-header></v-header>
 			<div class="liveContent">
@@ -32,6 +32,7 @@
 					</li>
 				</ul>
 			</div>
+			<infinite-scroll :scroller="scroller" :loading="loading" @load="loadMore"/>
 		</div>
 		<div v-else>
 			<mine></mine>
@@ -55,20 +56,25 @@ import Mine from '@/components/mine/mine';
 						template: '4',
 						mob_h5_url: 'http://www.shougongke.com/index.php?m=Topic&a=topicDetail&topic_id=1510&topic_type=shiji&funding_id=33&is_old=1'
 					},
-					{
-						topic_id: '1510',
-						topic_type: 'shiji',
-						pic: 'http://image.shougongke.com/topic/main/1493878194_73rbwkcanj.jpg@!home_page',
-						subject: '众筹｜这支笔，让你重新爱上书写',
-						template: '4',
-						mob_h5_url: 'http://www.shougongke.com/index.php?m=Topic&a=topicDetail&topic_id=1510&topic_type=shiji&funding_id=33&is_old=1'
-					}
+					// {
+					// 	topic_id: '1510',
+					// 	topic_type: 'shiji',
+					// 	pic: 'http://image.shougongke.com/topic/main/1493878194_73rbwkcanj.jpg@!home_page',
+					// 	subject: '众筹｜这支笔，让你重新爱上书写',
+					// 	template: '4',
+					// 	mob_h5_url: 'http://www.shougongke.com/index.php?m=Topic&a=topicDetail&topic_id=1510&topic_type=shiji&funding_id=33&is_old=1'
+					// },
+					{}, {}, {}, {}
 				],
 				currentSelect: '单直播间',
 				tabbarSelect: {
 					info: '首页'
 				},
-				index: 0
+				index: 0,
+				bottomCount: 20,
+				scroller: null,
+				loading: false,
+				refreshing: false
 			};
 		},
 		components: {
@@ -85,10 +91,57 @@ import Mine from '@/components/mine/mine';
 			} else {
 				this.tabbarSelect.info = window.localStorage.tabSelect;
 			};
+			this.scroller = this.$el;
+		},
+		methods: {
+			onScrollBottom() {
+				if (this.onFetching) {
+					// do nothing
+				} else {
+					this.onFetching = true;
+					setTimeout(() => {
+						var item = {};
+						if (this.homeArray.length > 5) {
+							this.onFetching = false;
+							this.$nextTick(() => {
+								this.$refs.scrollerBottom.reset();
+							});
+							return;
+						};
+						this.homeArray.push(item);
+						this.$nextTick(() => {
+							this.$refs.scrollerBottom.reset();
+						});
+						this.onFetching = false;
+					}, 2000);
+				};
+			},
+			loadMore() {
+				let vue = this;
+				this.loading = true;
+				setTimeout(() => {
+					vue.getList();
+				}, 500);
+			},
+			getList() {
+				for (var i = 0; i < 5; i++) {
+					var item = i;
+					this.homeArray.push(item);
+				};
+				this.loading = false;
+			}
 		}
 	};
 </script>
 <style type="text/css" scroped>
+	.homeContent {
+		z-index: 1;
+		width: 100vw;
+		height: 100vh;
+		overflow: auto;
+		transition: transform 0.3s ease;
+		-webkit-overflow-scrolling: touch;
+	}
 	#recentcontent{
 		width:100%;
 		/*height:100%;*/
