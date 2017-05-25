@@ -5,12 +5,17 @@
 			<div class="liveaudio-play">
 				<div class="liveaudio-triangle"></div>
 			</div>
-			<img src="../../assets/Health.jpg" class="liveaudio-top-img" @click="controlAudio">
+			<img src="../../assets/Health.jpg" class="liveaudio-top-img">
 		</div>
 
 		<!-- 进度条部分 -->
 		<div class="liveaudio-strip-box">
-			 <range decimal v-model="data1" class="liveaudio-strip"></range>
+			 <!-- <range  class="liveaudio-strip" :min="data1" :max="data2" @on-change="onChange"></range> -->
+			 <!-- <div>{{data1}}</div>
+			 <div>{{data2}}</div> -->
+			 <audio src="../../assets/friendmusic.mp3" controls="controls" id="audio" onplay="this.currentTime=3" class="liveaudio-audio"></audio>
+			 <!-- <span id="nowTime" :click="onChange()">获取时间</span> -->
+			 
 		</div>
 		
 		<div class="liveaudio-comment-box">
@@ -19,39 +24,25 @@
 		</div>
 		
 		<!-- 用户信息部分 -->
-		<div class="liveaudio-user-box">
-			<img src="../../assets/LF.jpg" class="liveaudio-user-img">
-			<span class="liveaudio-userName">微信名</span>
-			<span class="liveaudio-user-time">2017-03-15&nbsp;12:36</span>
-			<div class="liveaudio-text">五谷为养、五果为助、五畜为益、五菜为冲,气味合而服之,以补精益气</div>
-		</div>
-
-		<div class="liveaudio-user-box">
-			<img src="../../assets/LF.jpg" class="liveaudio-user-img">
-			<span class="liveaudio-userName">微信名</span>
-			<span class="liveaudio-user-time">2017-03-15&nbsp;12:36</span>
-			<div class="liveaudio-text">五谷为养、五果为助、五畜为益、五菜为冲,气味合而服之,以补精益气</div>
-		</div>
-
-		<div class="liveaudio-user-box">
-			<img src="../../assets/LF.jpg" class="liveaudio-user-img">
-			<span class="liveaudio-userName">微信名</span>
-			<span class="liveaudio-user-time">2017-03-15&nbsp;12:36</span>
-			<div class="liveaudio-text">五谷为养、五果为助、五畜为益、五菜为冲,气味合而服之,以补精益气</div>
-		</div>
-
-		<!-- 空白部分 -->
-		<div class="liveaudio-quarantine"></div>
-
+		<ul>
+			<li v-for="item in liveAudioList">
+				<div class="liveaudio-user-box">
+					<img src="../../assets/LF.jpg" class="liveaudio-user-img">
+					<span class="liveaudio-userName">微信名</span>
+					<span class="liveaudio-user-time">2017-03-15&nbsp;12:36</span>
+					<div class="liveaudio-text">五谷为养、五果为助、五畜为益、五菜为冲,气味合而服之,以补精益气</div>
+				</div>
+			</li>
+		</ul>
 
 
 		<!-- 底部输入部分 -->
 		<div class="liveaudio-sendOut-box">
 			<input type="text" class="liveaudio-input">
 			<!-- 发送按钮部分 -->
-			<div class="liveaudio-btn">发送</div>
+			<div class="liveaudio-btn" @click="sender">发送</div>
 		</div>
-
+		<infinite-scroll :scroller="scroller" :loading="loading" @load="loadMore"/>
 
 	</div>
 </template>
@@ -63,13 +54,40 @@
 		},
 		data() {
 			return {
-				data1: 30
+				data1: 0,
+				data2: 100,
+				scroller: null,
+				loading: false,
+				liveAudioList: [{}, {}, {}, {}, {}],
+				courseDetail: {
+					type: Object
+				}
 			};
 		},
 		methods: {
-			controlAudio() {
-				console.log('开始暂停');
+			onChange() {
+				alert('111');
+			},
+			sender() {
+				console.log('发送语音');
+			},
+			loadMore() {
+				let vue = this;
+				this.loading = true;
+				setTimeout(() => {
+					vue.getList();
+				}, 500);
+			},
+			getList() {
+				for (var i = 0; i < 5; i++) {
+					var item = i;
+					this.liveAudioList.push(item);
+				};
+				this.loading = false;
 			}
+		},
+		mounted() {
+			this.scroller = this.$el;
 		}
 	};
 
@@ -79,8 +97,11 @@
 		background-color:#fafafa;
 	}
 	.liveaudio-wrap{
-		width:100%;
-		height:100%;
+		width: 100vw;
+		height: 100vh;
+		overflow: auto;
+		transition: transform 0.3s ease;
+		-webkit-overflow-scrolling: touch;
 	}
 
 	/*顶部部分*/
@@ -262,5 +283,17 @@
 		align-items:center;
 		font-size:0.94rem;
 		color:#fff;
+	}
+
+
+	/*音频部分*/
+	/*.liveaudio-song{
+		width:100%;
+		position:absolute;
+		left:10%;
+	}*/
+	.liveaudio-audio{
+		width:100% !important;
+		margin-top:10px;
 	}
 </style>

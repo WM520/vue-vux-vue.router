@@ -12,7 +12,7 @@
 					<img src="../../assets/givefrend.png" class="toolse-icon">
 					<span class="titlee">送朋友</span>
 				</div>
-				<div class="price" @click="showGiveFriend">
+				<div class="price">
 					<span class="count">￥1500</span>
 				</div>
 			</div>		
@@ -20,14 +20,25 @@
 		<transition name="fade">
 			<modal v-show="modalshow" @commitAction="commitAction" @hideGiveFriend="hideGiveFriend"></modal>
 		</transition>
+<!-- 		<my-dialog :isShow="modalshow" @on-close="hideGiveFriend">
+
+		</my-dialog> -->
+		<transition name="fade">
+			<modal-bank v-show="priceshow" @commitAction="commitActionPrice" @hideGiveFriend="hideGiveFriend" :totalPrice="pingkeObject.totalPrice" :count="pingkeObject.count"></modal-bank>
+		</transition>
 	</div>
 </template>
 <script type="text/javascript">
 import modal from '@/components/common/modal';
+import modalBank from '@/components/common/modalbank';
 export default {
 	data () {
 		return {
-			modalshow: false
+			modalshow: false,
+			priceshow: false,
+			pingkeObject: {
+				type: Object
+			}
 		};
 	},
 	methods: {
@@ -37,14 +48,24 @@ export default {
 		hideGiveFriend() {
 			this.modalshow = false;
 		},
-		commitAction() {
+		commitAction(val1, val2) {
 			this.modalshow = false;
-			console.log('做一些提交处理');
+			this.priceshow = true;
+			this.pingkeObject.count = val1;
+			this.pingkeObject.totalPrice = val2;
+			console.log('做一些提交处理', this.count, this.totalPrice);
+		},
+		invoicing() {
+			this.priceshow = true;
+		},
+		commitActionPrice() {
+			this.priceshow = false;
 		}
 	},
 	components: {
 		// cartcontrol,
-		modal
+		modal,
+		modalBank
 	}
 
 };

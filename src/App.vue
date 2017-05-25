@@ -1,15 +1,23 @@
 <template>
   <div id="app">
-    <router-view></router-view>
+  	<!-- <transition name="fade"> -->
+	  	<keep-alive>
+		    <router-view></router-view>
+		</keep-alive>
+	<!-- </transition> -->
   </div>
 </template>
 
 <script>
 	export default {
-		name: 'app'
+		name: 'app',
+		counted() {
+			this.$store.commit('updateUserInfoOpenID', '12321312');
+		}
 	};
 </script>
 
-<style>
+<style lang="stylus">
+
 
 </style>

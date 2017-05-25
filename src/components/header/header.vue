@@ -1,10 +1,11 @@
 <template>
 	<div class="swipeheader">
-		<swiper loop auto :list="urlList" :index="imgindex" @on-index-change="onIndexChange" height="175px"></swiper>
+		<swiper loop auto :list="bannerList" :index="imgindex" @on-index-change="onIndexChange" height="175px"></swiper>
 	</div>
 </template>
 <script type="text/javascript">
 import { Swiper, SwiperItem } from 'vux';
+// 轮播图的地址
 const baseList = [{
   url: 'javascript:',
   img: 'https://static.vux.li/demo/1.jpg',
@@ -26,7 +27,7 @@ const urlList = baseList.map((item, index) => ({
 export default {
 	data () {
 		return {
-			demo01_list: baseList,
+			bannerList: baseList,
 			imgindex: 0,
 			urlList
 		};

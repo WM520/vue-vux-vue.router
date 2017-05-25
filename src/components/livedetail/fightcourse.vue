@@ -19,37 +19,23 @@
 		<div class="fightcourse-places">
 			<img src="../../assets/hourglass.png" class="fightcourse-hourglass">
 			<span class="fightcourse-placesText">拼课名额( 7/10 )</span>
+			<span class="fightcourse-isSuccess">评课成功</span>
 		</div>
 
 
 		<!-- 微信名部分 -->
-		<div class="fightcourse-WXNameBox">
-			<div class="fightcourse-WXImgBox">
-      			<img src="../../assets/LF.jpg" class="fightcourse-WXImg">
-			</div>
-			<span class="fightcourse-WXNameText">微信名</span>
-			<span class="fightcourse-WXDate">2017-05-15&nbsp;&nbsp;09:15:37</span>
-			<span class="fightcourse-success-T">拼课成功</span>
-		</div>
-		<div class="fightcourse-WXNameBox">
-			<div class="fightcourse-WXImgBox">
-      			<img src="../../assets/LF.jpg" class="fightcourse-WXImg">
-			</div>
-			<span class="fightcourse-WXNameText">微信名</span>
-			<span class="fightcourse-WXDate">2017-05-15&nbsp;&nbsp;09:15:37</span>
-			<span class="fightcourse-success-T">拼课成功</span>
-		</div>
-		<div class="fightcourse-WXNameBox">
-			<div class="fightcourse-WXImgBox">
-      			<img src="../../assets/LF.jpg" class="fightcourse-WXImg">
-			</div>
-			<span class="fightcourse-WXNameText">微信名</span>
-			<span class="fightcourse-WXDate">2017-05-15&nbsp;&nbsp;09:15:37</span>
-			<span class="fightcourse-success-T">拼课成功</span>
-		</div>
-
-
-		
+		<ul>
+			<li v-for = "item in successList">
+				<div class="fightcourse-WXNameBox">
+					<div class="fightcourse-WXImgBox">
+		      			<img src="../../assets/LF.jpg" class="fightcourse-WXImg">
+					</div>
+					<span class="fightcourse-WXNameText">微信名</span>
+					<span class="fightcourse-WXDate">2017-05-15&nbsp;&nbsp;09:15:37</span>
+					<span class="fightcourse-success-T">拼课成功</span>
+				</div>
+			</li>
+		</ul>
 
 
 		<!-- 拼课说明部分 -->
@@ -69,12 +55,23 @@
 
 
 		<!-- 进入听课按钮部分 -->
-		<div class="fightcourse-into">
-			我要拼课
-		</div>
+		<router-link to="liveaudio">
+			<div class="fightcourse-into">
+				我要拼课
+			</div>
+		</router-link>
+		
 	</div>
 </template>
-<script type="text/javascript"></script>
+<script type="text/javascript">
+	export default {
+		data() {
+			return {
+				successList: [{}, {}, {}]
+			};
+		}
+	};
+</script>
 <style type="text/css">
 	body{
 		background-color:#fafafa;
@@ -182,6 +179,13 @@
 		position:absolute;
 		line-height:3rem;
 		left:2.2rem;
+	}
+	.fightcourse-isSuccess{
+		position: absolute;
+		top: 1rem;
+		right:10px;
+		font-size:0.813rem;
+		color:#666;
 	}
 	.fightcourse-success{
 		position:absolute;

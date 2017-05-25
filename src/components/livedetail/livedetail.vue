@@ -1,5 +1,5 @@
 <template>
-  <div class="content">
+  <div class="liveDetailContent">
   	<div class="headercontent">
   		<img src="../../assets/teacherbg@2x.png" class="scanerImg">
   		<h1 class="livetitle">多吃谷物少吃菜，日常生活中的养生。谷肉果菜，食养尽之，无使过之，伤其正也</h1>
@@ -30,18 +30,20 @@
   			<span class="intructionTitle">直播介绍</span>
   		</div>
   		<ul>
-  			<li>
+  			<li v-for="item in courceList">
   				<router-link to="liveaudio">
 	  				<div class="arrangeList">
 	  					<span class="text">多吃谷物少吃菜，日常生活中的养生之道。。。<br>2017.03.16 16:00-17.00</span>
+	  					<img src="../../assets/live.png" class="isLive">
 	  				</div>
   				</router-link>
   			</li>
   		</ul>
   	</div>
+  	<infinite-scroll :scroller="scroller" :loading="loading" @load="loadMore"/>
   	<v-footer class="tool"></v-footer>
   	<!-- 分隔块3 -->
-  	<div class="recent-interval"></div>
+  	<!-- <div class="recent-interval"></div> -->
   </div>
 </template>
 
@@ -52,16 +54,45 @@ import Footer from '@/components/livedetailfooter/livedetailfooter'
  	components: {
  		split,
  		vFooter: Footer
+ 	},
+ 	data() {
+ 		return {
+ 			scroller: null,
+ 			loading: false,
+ 			courceList: [{}, {}, {}, {}, {}]
+ 		};
+ 	},
+ 	mounted() {
+ 		this.scroller = this.$el;
+ 	},
+ 	methods: {
+ 		loadMore() {
+ 			let vue = this;
+			this.loading = true;
+			setTimeout(() => {
+				vue.getList();
+			}, 500);
+ 		},
+ 		getList() {
+			for (var i = 0; i < 5; i++) {
+				var item = i;
+				this.courceList.push(item);
+			};
+			this.loading = false;
+		}
  	}
  };
 </script>
 
 <style type="text/css" scroped>
-.content {
+.liveDetailContent {
 	/*background-color: red;*/
 	position: relative;
-	width: 100%;
-	height: 100%;
+	width: 100vw;
+	height: 100vh;
+	overflow: auto;
+	transition: transform 0.3s ease;
+	-webkit-overflow-scrolling: touch;
 }
 .scanerImg {
 	height: 190px;
@@ -152,6 +183,9 @@ import Footer from '@/components/livedetailfooter/livedetailfooter'
 	color: #666666;
 	font-size: 14px;
 	line-height:25px;
+}
+.isLive {
+	padding-left: 5px 
 }
 .recent-interval {
 	width: 100%;

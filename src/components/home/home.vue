@@ -1,6 +1,7 @@
 <template>
 	<div class="homeContent" ref="home">
 		<div v-if="tabbarSelect.info === '首页'">
+			<!-- 轮播 -->
 			<v-header></v-header>
 			<div class="liveContent">
 				<div class="recent-wrapper">
@@ -10,6 +11,7 @@
 					</div>
 				</div>
 				<ul>
+					<!-- 课程列表 -->
 					<li v-for= "item in homeArray">
 						<router-link to="livedetail">
 							<div id="recentcontent">
@@ -24,6 +26,7 @@
 									<span class="userName">曲黎敏</span>
 									<img src="../../assets/heat@2x.png" class="fire">
 									<span class="fireNumber">234567次</span>
+									<!-- 是否已经购买的判断 -->
 									<img src="../../assets/buyed@2x.png" class="purchase">
 									<span class="money">￥300</span>
 								</div>
@@ -56,14 +59,6 @@ import Mine from '@/components/mine/mine';
 						template: '4',
 						mob_h5_url: 'http://www.shougongke.com/index.php?m=Topic&a=topicDetail&topic_id=1510&topic_type=shiji&funding_id=33&is_old=1'
 					},
-					// {
-					// 	topic_id: '1510',
-					// 	topic_type: 'shiji',
-					// 	pic: 'http://image.shougongke.com/topic/main/1493878194_73rbwkcanj.jpg@!home_page',
-					// 	subject: '众筹｜这支笔，让你重新爱上书写',
-					// 	template: '4',
-					// 	mob_h5_url: 'http://www.shougongke.com/index.php?m=Topic&a=topicDetail&topic_id=1510&topic_type=shiji&funding_id=33&is_old=1'
-					// },
 					{}, {}, {}, {}
 				],
 				currentSelect: '单直播间',
@@ -116,6 +111,7 @@ import Mine from '@/components/mine/mine';
 					}, 2000);
 				};
 			},
+			// 上拉加载更多
 			loadMore() {
 				let vue = this;
 				this.loading = true;

@@ -12,10 +12,10 @@
 					删除
 			</div>
 		</div>
-		
 	</div>
 </template>
 <script type="text/javascript">
+import { Actionsheet } from 'vux';
 	export default {
 		data() {
 			return {
@@ -59,6 +59,9 @@
 			// 		});
 			// 	};
 			// }, 1000);
+		},
+		components: {
+			Actionsheet
 		}
 	};
 </script>

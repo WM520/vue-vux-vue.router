@@ -27,6 +27,12 @@
 			addCart() {
 				this.count++;
 			}
+		},
+		watch: {
+			count() {
+				this.$emit('on-change', this.count);
+				console.log(this.count);
+			}
 		}
 	};
 </script>

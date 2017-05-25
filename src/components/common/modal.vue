@@ -1,16 +1,17 @@
 <template>
 	<div class="alertModel">
+		<div class="alertBG" @click="hideGiveFriend"></div>
 		<div class="alert">
-			<img src="../../assets/bigBG@2x.png" class="bgImage">
+			<img src="../../assets/bigBG@2x.png" class="bgImage" >
 			<img src="../../assets/close.png" class="close" @click="hideGiveFriend">
 			<div class="modalcontent">
 				<img src="../../assets/paysucceed@2x.png" class="payimg">
 				<span class="title">多吃谷物少吃菜，日常生活中的养生。谷肉果菜，食养尽之，无使过之，伤其正也</span>
 				<span class="carttitle">赠送数量</span>
-				<cartcontrol class="cartcontrol">
+				<cartcontrol class="cartcontrol" @on-change="totalPriceCount">
 									</cartcontrol>
 				<span class="total">合计</span>
-				<span class="price">4500</span>
+				<span class="price">{{ totalPrice }}</span>
 				<div class="modalcommit" @click="commitAction">
 					<span class="commitspan">确定</span>
 				</div>
@@ -22,6 +23,12 @@
 <script type="text/javascript">
 import cartcontrol from '@/components/cartcontrol/cartcontrol';
 	export default {
+		data() {
+			return {
+				count: 1,
+				totalPrice: 1500
+			};
+		},
 		components: {
 			cartcontrol
 		},
@@ -30,31 +37,47 @@ import cartcontrol from '@/components/cartcontrol/cartcontrol';
 				this.$emit('hideGiveFriend');
 			},
 			commitAction() {
-				this.$emit('commitAction');
+				this.$emit('commitAction', this.count, this.totalPrice);
+			},
+			totalPriceCount(val) {
+				console.log(val);
+				this.count = val;
+				this.totalPrice = this.count * 1500;
 			}
 		}
 	};
 </script>
-<style lang="stylus">
+<style lang="stylus" scoped>
 	.alertModel
 		position: fixed
-		z-index: 100
 		top: 0
 		left: 0
 		width: 100%
 		height: 100%
 		overflow: auto
-		background-filter: blur(10px)
-		opacity: 1
-		background: rgba(7, 17, 27, 0.3)
+		// background-filter: blur(10px)
+		// opacity: 1
+		// background: rgba(7, 17, 27, 0.3)
 		&.fade-enter-active, &.fade-leave-active
 			transition: all 0.5s
 		&.fade-enter, &.fade-leave-active
 			opacity: 0
 			background: rgba(7, 17, 27, 0)
+		.alertBG
+			// position: fixed
+			z-index: 10
+			top: 0
+			left: 0
+			width: 100%
+			height: 100%
+			overflow: auto
+			background-filter: blur(10px)
+			opacity: 1
+			background: rgba(7, 17, 27, 0.1)
 		.alert
 			position: absolute
 			margin: auto
+			z-index: 20
 			top:0
 			left:0
 			right:0
@@ -89,7 +112,7 @@ import cartcontrol from '@/components/cartcontrol/cartcontrol';
 					position: absolute
 					color: #333333
 					top: 40%
-					font-size: 16px
+					font-size: 14px
 					line-height: 20px
 					padding-left: 5%
 					padding-right: 5%

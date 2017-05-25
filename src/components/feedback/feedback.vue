@@ -1,8 +1,8 @@
 <template>
 	<div class="input-wrapper">
-		<x-textarea :max="300" name="description" :height="200" :placeholder="placeholdertext"></x-textarea>
+		<x-textarea :max="300" name="description" :height="200" :placeholder="placeholdertext" @on-change="onEvent"></x-textarea>
 		<div class="commit">
-			<span class="commitbutton">确定</span>
+			<span class="commitbutton" @click="commit">确定</span>
 		</div>
 	</div>
 </template>
@@ -11,11 +11,23 @@ import { XTextarea } from 'vux';
 	export default {
 		data() {
 			return {
-				placeholdertext: '意见反馈'
+				placeholdertext: '意见反馈',
+				textValue: ''
 			};
 		},
 		components: {
 			XTextarea
+		},
+		methods: {
+			// 提交服务器
+			commit() {
+				console.log('提交反馈');
+			},
+			// 取输入框的值
+			onEvent(val) {
+				this.textValue = val;
+				console.log('this.textValue', this.textValue);
+			}
 		}
 	};
 </script>
