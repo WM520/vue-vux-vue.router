@@ -17,6 +17,7 @@ Vue.config.productionTip = false;
 Vue.use(InfiniteScroll);
 Vue.component(infinite.name, infinite);
 Vue.use(VueCookie);
+Vue.use(router);
 /* eslint-disable no-new */
 // const count = 1;
 

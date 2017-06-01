@@ -1,4 +1,4 @@
-import Vue from 'vue';
+// import Vue from 'vue';
 
 const state = {
 	userName: '',
@@ -29,14 +29,14 @@ const getters = {
 };
 const actions = {
 	fetchUserInfoUserName ({commit, state}) {
-		Vue.http.post('/qingzhi/login', state.params)
-		.then((res) => {
-			// console.log(res.data);
-			console.log(res.data.content.error);
-			commit('updateUserInfoUserName', 'wangmiao');
-		}, (err) => {
-			console.log(err);
-		});
+		// Vue.http.post('/api/web/v1/app/login', state.params)
+		// .then((res) => {
+		// 	// console.log(res);
+		// 	// console.log(res.content.error);
+		// 	commit('updateUserInfoUserName', 'wangmiao');
+		// }, (err) => {
+		// 	console.log(err);
+		// });
 	}
 };
 const mutations = {

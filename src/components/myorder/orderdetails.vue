@@ -13,7 +13,7 @@
 
 
 		<!-- 讲师 -->
-		<router-link to="myteacher">
+		<router-link :to="{ name: 'MyTeacher', params: { isTeacher: isTeacher }}">
 			<div class="orderdetails-teacher">
 				<!-- <div class="orderdetails-teacher-box"></div> -->
 				<img src="../../assets/LF.jpg" class="orderdetails-teacher-portrait">
@@ -99,7 +99,8 @@
 	export default {
 		data() {
 			return {
-				liveList: [{}, {}]
+				liveList: [{}, {}],
+				isTeacher: false
 			};
 		}
 	};

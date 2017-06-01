@@ -1,5 +1,6 @@
 <template>
 	<div class="alertModel">
+		<div class="alertBG" @click="hideGiveFriend"></div>
 		<div class="alert">
 			<img src="../../assets/bigBG@2x.png" class="bgImage">
 			<img src="../../assets/close.png" class="close" @click="hideGiveFriend">
@@ -38,10 +39,10 @@ import cartcontrol from '@/components/cartcontrol/cartcontrol';
 		},
 		methods: {
 			hideGiveFriend() {
-				this.$emit('hideGiveFriend');
+				this.$emit('hidePrice');
 			},
 			commitAction() {
-				this.$emit('commitAction');
+				this.$emit('commitPrice');
 			}
 		}
 	};
@@ -49,7 +50,7 @@ import cartcontrol from '@/components/cartcontrol/cartcontrol';
 <style lang="stylus" scoped>
 	.alertModel
 		position: fixed
-		z-index: 100
+		z-index: 5
 		top: 0
 		left: 0
 		width: 100%
@@ -57,12 +58,22 @@ import cartcontrol from '@/components/cartcontrol/cartcontrol';
 		overflow: auto
 		background-filter: blur(10px)
 		opacity: 1
-		background: rgba(7, 17, 27, 0.3)
 		&.fade-enter-active, &.fade-leave-active
 			transition: all 0.5s
 		&.fade-enter, &.fade-leave-active
 			opacity: 0
 			background: rgba(7, 17, 27, 0)
+		.alertBG
+			// position: fixed
+			z-index: 10
+			top: 0
+			left: 0
+			width: 100%
+			height: 100%
+			overflow: auto
+			background-filter: blur(10px)
+			opacity: 1
+			background: rgba(7, 17, 27, 0.1)
 		.alert
 			position: absolute
 			margin: auto

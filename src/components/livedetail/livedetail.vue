@@ -3,7 +3,7 @@
   	<div class="headercontent">
   		<img src="../../assets/teacherbg@2x.png" class="scanerImg">
   		<h1 class="livetitle">多吃谷物少吃菜，日常生活中的养生。谷肉果菜，食养尽之，无使过之，伤其正也</h1>
-  		<router-link to="/myteacher">
+  		<router-link to="/teacher">
   			<div class="teacher">
 	  			<img src="../../assets/logo@2x.png" class="headericon">
 	  			<span class="name">张宇  讲师</span>

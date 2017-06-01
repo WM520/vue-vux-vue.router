@@ -20,11 +20,8 @@
 		<transition name="fade">
 			<modal v-show="modalshow" @commitAction="commitAction" @hideGiveFriend="hideGiveFriend"></modal>
 		</transition>
-<!-- 		<my-dialog :isShow="modalshow" @on-close="hideGiveFriend">
-
-		</my-dialog> -->
 		<transition name="fade">
-			<modal-bank v-show="priceshow" @commitAction="commitActionPrice" @hideGiveFriend="hideGiveFriend" :totalPrice="pingkeObject.totalPrice" :count="pingkeObject.count"></modal-bank>
+			<modal-bank v-show="priceshow" @commitPrice="commitActionPrice" @hidePrice="hidePrice" :totalPrice="pingkeObject.totalPrice" :count="pingkeObject.count"></modal-bank>
 		</transition>
 	</div>
 </template>
@@ -48,6 +45,9 @@ export default {
 		hideGiveFriend() {
 			this.modalshow = false;
 		},
+		hidePrice() {
+			this.priceshow = false;
+		},
 		commitAction(val1, val2) {
 			this.modalshow = false;
 			this.priceshow = true;
@@ -63,7 +63,6 @@ export default {
 		}
 	},
 	components: {
-		// cartcontrol,
 		modal,
 		modalBank
 	}

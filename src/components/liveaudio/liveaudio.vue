@@ -10,12 +10,12 @@
 
 		<!-- 进度条部分 -->
 		<div class="liveaudio-strip-box">
-			 <!-- <range  class="liveaudio-strip" :min="data1" :max="data2" @on-change="onChange"></range> -->
-			 <!-- <div>{{data1}}</div>
-			 <div>{{data2}}</div> -->
-			 <audio src="../../assets/friendmusic.mp3" controls="controls" id="audio" onplay="this.currentTime=3" class="liveaudio-audio"></audio>
-			 <!-- <span id="nowTime" :click="onChange()">获取时间</span> -->
-			 
+			<a-player autoplay :music="{
+			  title: 'Preparation',
+			  author: 'Hans Zimmer/Richard Harvey',
+			  url: 'http://devtest.qiniudn.com/Preparation.mp3',
+			  pic: 'http://devtest.qiniudn.com/Preparation.jpg'
+			}" @play="play" @end="end" class="liveaudio-audio"></a-player>
 		</div>
 		
 		<div class="liveaudio-comment-box">
@@ -47,10 +47,12 @@
 	</div>
 </template>
 <script type="text/javascript">
-	import { Range } from 'vux';
+	// import { Range } from 'vux';
+	import VueAplayer from 'vue-aplayer';
 	export default{
 		components: {
-			Range
+			// Range
+			'a-player': VueAplayer
 		},
 		data() {
 			return {
@@ -84,6 +86,12 @@
 					this.liveAudioList.push(item);
 				};
 				this.loading = false;
+			},
+			play() {
+				console.log('开始播放音乐');
+			},
+			end() {
+				console.log('播放结束');
 			}
 		},
 		mounted() {
@@ -92,7 +100,7 @@
 	};
 
 </script>
-<style type="text/css">
+<style type="text/css" scroped>
 	body{
 		background-color:#fafafa;
 	}
@@ -143,9 +151,9 @@
 	/*进度条部分*/
 	.liveaudio-strip-box{
 		width:100%;
-		height:50px;
+		height:70px;
 		position:relative;
-		border-bottom:1px solid #e5e5e5;
+		/*border-bottom:1px solid #e5e5e5;*/
 		background-color:white;
 	}
 	.liveaudio-strip{
@@ -293,7 +301,6 @@
 		left:10%;
 	}*/
 	.liveaudio-audio{
-		width:100% !important;
-		margin-top:10px;
+		margin:0px !important;
 	}
 </style>

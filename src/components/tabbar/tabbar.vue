@@ -71,7 +71,7 @@
 		}
 	};
 </script>
-<style lang="stylus">
+<style lang="stylus" scroped>
 .footerbar
 	position: fixed
 	bottom: 0px

@@ -36,7 +36,19 @@
 		</div>
 	</div>
 </template>
-<script type="text/javascript"></script>
+<script type="text/javascript">
+// import Vue from 'vue';
+	export default {
+		beforeRouteEnter (to, from, next) {
+			console.log(to.params);
+			if (to.params.isTeacher) {
+				next();
+			} else {
+				alert('您还不是讲师');
+			};
+		}
+	};
+</script>
 <style type="text/css">
 	
 	.myteacher-wrap{

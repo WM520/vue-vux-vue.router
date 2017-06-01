@@ -7,15 +7,15 @@
 import { Swiper, SwiperItem } from 'vux';
 // 轮播图的地址
 const baseList = [{
-  url: 'javascript:',
+  url: 'http://qingzz.com',
   img: 'https://static.vux.li/demo/1.jpg',
   title: '送你一朵fua'
 }, {
-  url: 'javascript:',
+  url: 'http://www.gitwangmiao.top',
   img: 'https://static.vux.li/demo/2.jpg',
   title: '送你一辆车'
 }, {
-  url: 'javascript:',
+  url: 'https://github.com',
   img: 'https://static.vux.li/demo/3.jpg',
   title: '送你一次旅行'
 }];

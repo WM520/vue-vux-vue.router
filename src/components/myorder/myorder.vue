@@ -44,6 +44,7 @@
 				</li>
 			</ul>
 		</router-link>
+		<infinite-scroll :scroller="scroller" :loading="loading" @load="loadMore"/>
 	</div>
 </template>
 <script type="text/javascript">
@@ -65,7 +66,9 @@ import { Tab, TabItem } from 'vux';
 				userName: '曲黎敏',
 				browseCount: '10000',
 				price: '$200'
-				}]
+				}],
+				loading: false,
+				scroller: null
 			};
 		},
 		components: {
@@ -106,11 +109,35 @@ import { Tab, TabItem } from 'vux';
 					this.orderList.push(item1);
 					this.orderList.push(item2);
 				};
+			},
+			loadMore() {
+				let vue = this;
+				this.loading = true;
+				setTimeout(() => {
+					vue.getList();
+				}, 500);
+			},
+			getList() {
+				for (var i = 0; i < 5; i++) {
+					var item = {
+								imgUrl: require('../../assets/grain.jpg'),
+								title: '多吃谷物少吃菜,日常生活中的养生之道。谷肉果菜，食养尽之，无使过之，伤其正也。',
+								introduceText: '饮食养生其实就是让身体的本能去顺应...',
+								userName: '曲黎敏',
+								browseCount: '10000',
+								price: '$200'
+							};
+					this.orderList.push(item);
+				};
+				this.loading = false;
 			}
+		},
+		mounted() {
+			this.scroller = this.$el;
 		}
 	};
 </script>
-<style type="text/css">
+<style type="text/css" scorped>
 	body{
 		background-color:#fafafa;
 	}
@@ -118,6 +145,11 @@ import { Tab, TabItem } from 'vux';
 		width:100%;
 		height:auto;
 		max-width:750px;
+		width: 100vw;
+		height: 100vh;
+		overflow: auto;
+		transition: transform 0.3s ease;
+		-webkit-overflow-scrolling: touch;
 	}
 	/*导航部分*/
 	.myorder-Nav-box{

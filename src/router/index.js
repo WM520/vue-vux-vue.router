@@ -16,6 +16,8 @@ import Particulars from '@/components/myteacher/particulars';
 import AddBankCard from '@/components/myteacher/addBankCard';
 import BankCard from '@/components/myteacher/bankCard';
 import LiveAudio from '@/components/liveaudio/liveaudio';
+import Teacher from '@/components/livedetail/teacher';
+import MineDetail from '@/components/mine/minedetail';
 
 Vue.use(Router);
 
@@ -101,6 +103,16 @@ export default new Router({
       path: '/liveaudio',
       name: 'LiveAudio',
       component: LiveAudio
+    },
+    {
+      path: '/teacher',
+      name: 'Teacher',
+      component: Teacher
+    },
+    {
+      path: '/minedetail',
+      name: 'MineDetail',
+      component: MineDetail
     }
   ]
 });

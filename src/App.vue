@@ -10,10 +10,17 @@
 
 <script>
 	export default {
-		name: 'app',
-		counted() {
-			this.$store.commit('updateUserInfoOpenID', '12321312');
-		}
+		name: 'app'
+		// mounted() {
+		// 	this.$http.get('api/web/v1/app/logins')
+		// 	.then((res) => {
+		// 		alert.log(res);
+		// 		console.log(res);
+		// 	}, (err) => {
+		// 		alert(err);
+		// 		console.log(err);
+		// 	});
+		// }
 	};
 </script>
 

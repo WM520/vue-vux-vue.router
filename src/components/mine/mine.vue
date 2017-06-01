@@ -2,12 +2,10 @@
 	<div class="minecontent">
 
 		<group>
-			<cell title="我的课程"  is-link>
+			<cell :title="userName"  :link="{name:'MineDetail'}" is-link>
 				<img slot="icon" src="../../assets/withdrawal@2x.png" style="display:block; margin-right:5px; width:60px; -webkit-border-radius: 50px">
 			</cell>
 		</group>
-
-
 		<group>
 			<cell title="我的课程"  :link="{path:'/mycourse'}" is-link>
 				<img slot="icon" src="../../assets/mycourse.png" style="display:block; margin-right:10px" width="16">
@@ -17,7 +15,7 @@
 	      	</cell>
 		</group>
 		<group>
-			<cell title="讲师入口"  :link="{path:'/myteacher'}" is-link>
+			<cell title="讲师入口"  :link="{name:'MyTeacher', params: { isTeacher:isTeacher }}" is-link>
 				<img slot="icon" src="../../assets/teacher.png" style="display:block; margin-right:5px" width="16">
 			</cell>
 		</group>
@@ -39,6 +37,12 @@
 			Group,
 			Cell,
 			CellBox
+		},
+		data() {
+			return {
+				isTeacher: false,
+				userName: '微信名'
+			};
 		}
 	};
 </script>
