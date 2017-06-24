@@ -5,7 +5,7 @@
 			<img src="../../assets/bigBG@2x.png" class="bgImage" >
 			<img src="../../assets/close.png" class="close" @click="hideGiveFriend">
 			<div class="modalcontent">
-				<img src="../../assets/paysucceed@2x.png" class="payimg">
+				<img src="../../assets/gift@2x.png" class="payimg">
 				<span class="title">多吃谷物少吃菜，日常生活中的养生。谷肉果菜，食养尽之，无使过之，伤其正也</span>
 				<span class="carttitle">赠送数量</span>
 				<cartcontrol class="cartcontrol" @on-change="totalPriceCount">
@@ -25,8 +25,8 @@ import cartcontrol from '@/components/cartcontrol/cartcontrol';
 	export default {
 		data() {
 			return {
-				count: 1,
-				totalPrice: 1500
+				count: 0,
+				totalPrice: this.itemInfo.coursePrice
 			};
 		},
 		components: {
@@ -42,7 +42,19 @@ import cartcontrol from '@/components/cartcontrol/cartcontrol';
 			totalPriceCount(val) {
 				console.log(val);
 				this.count = val;
-				this.totalPrice = this.count * 1500;
+				this.totalPrice = this.count * this.itemInfo.coursePrice;
+			}
+		},
+		props: {
+			itemInfo: {
+				type: Object,
+				default() {
+					return {
+							coursePrice: '1500',
+							img: 'http://192.168.0.118:38080/headImage/lecturer/2017-05-09/1494315805638.jpg',
+							title: '送你一朵fua'
+						};
+				}
 			}
 		}
 	};

@@ -1,48 +1,80 @@
 <template>
-	<div id="content">
-		<split></split>
+	<div id="mycourse-content">
+		<split v-show="courseArray.length !== 0"></split>
+		<!-- 没有课程的时候给个没有课程的提示 -->
+		<blankpage v-show="courseArray.length === 0"><span>您还没有购买课程</span></blankpage>
 		<ul>
-			<router-link to="livedetail">
+			
 				<li v-for="item in courseArray">
-					<div class="order">
-						<span class="ordertext">订单号: 20170016254</span>
-					</div>
-					<div id="topImgDiv">
-					<img src="../../assets/grain.jpg" alt="" class="imgGrain">
-					<div class="begin"></div>
-					<span class="beginText">即将开始</span>
-					<div class="introduceText">多吃谷物少吃菜,日常生活中的养生之道。谷肉果菜，食养尽之，无使过之，伤其正也。</div>
-					<p class="introduceFoodText">饮食养生其实就是让身体的本能去顺应...</p>
-					<img src="../../assets/lecturer@2x.png" class="userIcon">
-					<span class="userName">曲黎敏</span>
-					<span class="money">￥300</span>
-					</div>
-					<split></split>
+					<router-link :to="{name:'LiveDetail', params: { id:item.courseId }}">
+						<div class="order">
+							<span class="ordertext">订单号: {{ item.orderNumber }}</span>
+						</div>
+						<div id="topImgDiv">
+						<img src="../../assets/grain.jpg" alt="" class="imgGrain">
+						<div class="begin"></div>
+						<span class="beginText">即将开始</span>
+						<div class="introduceText">{{ item.courseName }}</div>
+						<p class="introduceFoodText">{{ item.courseIntroduction }}</p>
+						<img src="../../assets/lecturer@2x.png" class="userIcon">
+						<span class="userName">{{ item.lecturerName }}</span>
+						<span class="money">￥{{ item.coursePrice }}</span>
+						</div>
+						<split></split>
+					</router-link>
 				</li>
-			</router-link>
+			
 		</ul>
 
 	</div>
 </template>
 <script type="text/javascript">
 import split from '@/components/split/split';
+import BlankPage from '@/components/blankpages/blankpages';
 	export default {
 		data() {
 			return {
-				courseArray: [{}, {}, {}]
+				courseArray: []
 			};
 		},
 		components: {
-			split
+			split,
+			blankpage: BlankPage
+		},
+		mounted() {
+			// let userID = this.$store.state.UserInfo.useID;
+			// let id = localStorage.getItem('dataid');
+			// let url = this.$store.state.UserInfo.appendURL + 'findcoursebyuserid?id=' + id + '&userId=' + userID;
+			// console.log(url);
+			// this.$http.get(url)
+			// .then((res) => {
+			// 	console.log(res);
+			// 	this.courseArray = res.data.content.result;
+			// });
+		},
+		beforeRouteEnter (to, from, next) {
+			next(vm => {
+				let userID = vm.$store.state.UserInfo.useID;
+				let id = localStorage.getItem('dataid');
+				let url = vm.$store.state.UserInfo.appendURL + 'findcoursebyuserid?id=' + id + '&userId=' + userID;
+				console.log(url);
+				vm.$http.get(url)
+				.then((res) => {
+					console.log(res);
+					vm.courseArray = res.data.content.result;
+					console.log(vm.courseArray);
+				});
+			});
 		}
 	};
 </script>
-<style type="text/css">
-	#content{
-		width:100%;
-		height:100%;
+<style type="text/css" scroped>
+	#mycourse-content{
+		width:100vw;
+		height:100vh;
+		background: #f3f5f7
 	}
-	#content #topImgDiv{
+	#mycourse-content #topImgDiv{
 		width:100%;
 		height:8rem;
 		margin:0 auto;
@@ -50,7 +82,7 @@ import split from '@/components/split/split';
 		border-bottom:0.01rem solid #eee;
 		position:relative;
 	}
-	#content #topImgDiv .imgGrain{
+	#mycourse-content #topImgDiv .imgGrain{
 		width:6rem;
 		height:6rem;
 		margin-top:1.1rem;

@@ -31,6 +31,17 @@ import split from '@/components/split/split';
 	export default {
 		components: {
 			split
+		},
+		beforeRouteEnter (to, from, next) {
+			next(vm => {
+				let id = localStorage.getItem('dataid');
+				let lecturerId = vm.$store.state.UserInfo.lecturerId;
+				let url = 'api/web/v1/app/findincomeandcoursebyid?id=' + id + '&lecturerId=' + lecturerId;
+				vm.$http.get(url)
+				.then((res) => {
+					console.log(res);
+				});
+			});
 		}
 	};
 </script>

@@ -1,11 +1,12 @@
 <template>
-	<div class="content">
+	<div class="wallet-content">
 		<group>
-			<cell title="银行卡信息" :link="{path:'/addbankcard'}" isLink></cell>
-			<cell title="总收入" :link="{path:'/particulars'}" :value="money"></cell>
+			<!-- <cell title="银行卡信息" :link="{name:'AddBankCard'}" isLink></cell> -->
+			<cell title="银行卡信息" @click.native="goBank" isLink></cell>
+			<cell title="总收入" :link="{name:'Particulars'}" :value="walletModel.sumIncome"></cell>
 			<!-- <cell title="账户余额" :value="money"></cell> -->
-			<walletcell :title="title" :money="money" @feedback="getFeedback"></walletcell>
-			<cell title="提现金额" :value="money"></cell>
+			<walletcell :title="title" :money="walletModel.incomeMoney" @feedback="getFeedback"></walletcell>
+			<cell title="提现金额" :value="walletModel.withdrowMoney"></cell>
 			
 		</group>
 		<group>
@@ -14,7 +15,7 @@
 	      	</cell>
 	      	<!--    <scroller lock-x height="-46px" @on-scroll="onScroll" ref="scrollerEvent" >
 			      <div class="box2"> -->
-			        <p v-for="i in 30" class="withDrawal">placeholder {{i}}      2017-05-15 09:15:37      已处理</p>
+			        <p v-for="item in walletModel.withdrawDeposits" class="withDrawal">{{ item.withdrawMoney }}    {{ item.withdrawCreateTime }}      {{ item.withdrawStatus }}</p>
 			  <!--     </div>
     			</scroller> -->
 		</group>
@@ -33,7 +34,8 @@ import modalbank from '@/components/common/addBankModal';
 				money: 900,
 				title: '账户余额',
 				modalshow: false,
-				scroller: null
+				scroller: null,
+				walletModel: {}
 			};
 		},
 		components: {
@@ -51,25 +53,69 @@ import modalbank from '@/components/common/addBankModal';
 				this.modalshow = true;
 				console.log('提现操作');
 			},
-			commitAction() {
+			commitAction(val) {
 				this.modalshow = false;
-				console.log('提交提现');
+				// 提现接口有遗留问题
+				var params = {
+					id: localStorage.getItem('dataid'),
+					withdrawLecturerId: this.$store.state.UserInfo.lecturerId,
+					withdrawCardId: '',
+					withdrawMoney: val
+				}
+				let url = 'api/web/v1/app/savewithdraw';
+				this.$http.post(url, params)
+				.then((res) => {
+					console.log(res);
+				});
+				console.log('提交提现', val);
 			},
 			hideGiveFriend() {
 				this.modalshow = false;
 				console.log('提现取消');
+			},
+			goBank() {
+				console.log(111111111111111);
+				let id = localStorage.getItem('dataid');
+				let lecturerId = this.$store.state.UserInfo.lecturerId;
+				let url = 'api/web/v1/app/findbankcardbylecturerid?id=' + id + '&&lecturerId=' + lecturerId;
+				this.$http.get(url)
+				.then((res) => {
+					if (res.data.content.result === null) {
+						this.$router.push({ name: 'AddBankCard' });
+					} else {
+						// console.log(res.data.content.result);
+						this.$router.push({ name: 'BankCard', params: { cardMessage:  res.data.content.result } });
+					};
+				});
 			}
 		},
 		mounted() {
-			// this.$nextTick(() => {
-			// 	this.$refs.scrollerEvent.reset({top: 0});
-			// });
 			this.scroller = this.$el;
+		},
+		beforeRouteEnter (to, from, next) {
+			next(vm => {
+				let url = 'api/web/v1/app/findincomebyid?id=' + localStorage.getItem('dataid') + '&lecturerId=' + vm.$store.state.UserInfo.lecturerId;
+				console.log(url)
+				vm.$http.get(url)
+				.then((res) => {
+					console.log(res);
+					vm.walletModel = res.data.content.result;
+					if (vm.walletModel.sumIncome === null) {
+						vm.walletModel.sumIncome = 0;
+					};
+					if (vm.walletModel.incomeMoney === null) {
+						vm.walletModel.incomeMoney = 0;
+					};
+					if (vm.walletModel.withdrowMoney === null) {
+						vm.walletModel.withdrowMoney = 0;
+					};
+				});
+			});
 		}
 	};
 </script>
 <style lang="stylus" scroped>
-.content
+.wallet-content
 	width: 100vw
 	height: 100vh
 	overflow: auto;

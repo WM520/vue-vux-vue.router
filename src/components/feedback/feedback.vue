@@ -1,13 +1,15 @@
 <template>
 	<div class="input-wrapper">
-		<x-textarea :max="300" name="description" :height="200" :placeholder="placeholdertext" @on-change="onEvent"></x-textarea>
-		<div class="commit">
-			<span class="commitbutton" @click="commit">确定</span>
+		<Group>
+			<x-textarea :max="300" name="description" :height="200" :placeholder="placeholdertext" @on-change="onEvent"></x-textarea>
+		</Group>
+		<div class="commit" @click="commit">
+			<span class="commitbutton">确定</span>
 		</div>
 	</div>
 </template>
 <script type="text/javascript">
-import { XTextarea } from 'vux';
+import { XTextarea, Group } from 'vux';
 	export default {
 		data() {
 			return {
@@ -16,12 +18,25 @@ import { XTextarea } from 'vux';
 			};
 		},
 		components: {
-			XTextarea
+			XTextarea,
+			Group
 		},
 		methods: {
 			// 提交服务器
 			commit() {
-				console.log('提交反馈');
+				alert('提交反馈');
+				// 意见反馈接口
+				var params = {
+					id: localStorage.getItem('dataid'),
+					feedbackUserId: this.$store.state.UserInfo.useID,
+					feedbackContent: this.textValue
+				};
+				let url = 'api/web/v1/app/savefeedback';
+				this.$http.post(url, params)
+				.then((res) => {
+					alert('反馈成功');
+					this.$router.go(-1);
+				});
 			},
 			// 取输入框的值
 			onEvent(val) {
@@ -37,6 +52,7 @@ import { XTextarea } from 'vux';
 	width: 60%
 	background-color: red
 	margin-left: 20%
+	margin-top: 20px
 	height: 35px
 	-webkit-border-radius: 5px
 	text-align: center

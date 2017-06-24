@@ -15,15 +15,17 @@
 	export default {
 		data() {
 			return {
-				count: 1
+				count: 0
 			};
 		},
 		methods: {
+			// 减
 			decreaseCart() {
 				if (this.count > 0) {
 					this.count--;
 				};
 			},
+			// 加
 			addCart() {
 				this.count++;
 			}

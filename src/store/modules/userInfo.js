@@ -4,7 +4,18 @@ const state = {
 	userName: '',
 	openID: '',
 	access_token: '',
+	headimgurl: '',
+	userCity: '',
 	count: 0,
+	useID: '',
+	hostURL: 'http://192.168.0.126:38080',
+	appendURL: '/api/web/v1/app/',
+	isLogin: false,
+	userSex: '',
+	userProvince: '',
+	userCreateTime: '',
+	userIsLecturer: false,
+	lecturerId: '',
 	params: {
 		userWxOpenid: '123hyfaaa',
 		userNickname: '测试123',
@@ -45,6 +56,33 @@ const mutations = {
 	},
 	updateUserInfoOpenID(state, openID) {
 		state.openID = openID;
+	},
+	updateUserInfoHeadImgURL(state, headimgurl) {
+		state.headimgurl = headimgurl;
+	},
+	updateUserInfoCity(state, userCity) {
+		state.userCity = userCity;
+	},
+	updateUserInfoUserID(state, useID) {
+		state.useID = useID;
+	},
+	updateUserInfoIsLogin(state, isLogin) {
+		state.isLogin = isLogin;
+	},
+	updateUserInfoUserSex(state, userSex) {
+		state.userSex = userSex;
+	},
+	updateUserInfoUserProvince(state, userProvince) {
+		state.userProvince = userProvince;
+	},
+	updateUserInfoUserCreateTime(state, userCreateTime) {
+		state.userCreateTime = userCreateTime;
+	},
+	updateUserInfoUserIsLecturer(state, userIsLecturer) {
+		state.userIsLecturer = userIsLecturer;
+	},
+	updateUserInfoUserIsLecturerId(state, lecturerId) {
+		state.lecturerId = lecturerId;
 	}
 };
 

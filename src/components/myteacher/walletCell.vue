@@ -19,7 +19,7 @@
 		}
 	};
 </script>
-<style lang="stylus">
+<style lang="stylus" scroped>
 	.feedback-wrapper
 		border-top: 1px solid rgba(7, 17, 27, 0.1)
 		width: 100%
@@ -29,17 +29,17 @@
 		padding: 5px
 		.title
 			display: inline-block
-			padding-top: 10px
+			padding-top: 6px
 			padding-left: 10px
 		.balance
 			position: absolute
-			padding-top: 10px
+			padding-top: 6px
 			right: 70px
 			display: inline-block
 		.feedbackbutton
 			display: inline-block
 			position: absolute
-			margin-top: 10px
+			margin-top: 5px
 			text-align: center
 			-webkit-border-radius: 5px;
 			right: 10px

@@ -6,8 +6,8 @@
 					<img src="../../assets/withdrawal@2x.png" style="display:block; width:60px; -webkit-border-radius: 50px; height: 60px">
 				</div>
 				<div class="content">
-					<span class="title">微信名微信名</span><br><br>
-					<span class="joinTime">加入时间: 2017-03-16</span>
+					<span class="title">{{ name }}</span><br><br>
+					<span class="joinTime">加入时间: {{ joinTime }}</span>
 				</div>
 			</div>
 		<!-- </group> -->
@@ -24,14 +24,40 @@
 	export default {
 		data() {
 			return {
+				name: this.$store.state.UserInfo.userName,
 				sex: '男',
-				address: '江苏南京'
+				address: this.$store.state.UserInfo.userProvince + this.$store.state.UserInfo.userCity,
+				joinTime:  this.$store.state.UserInfo.userCreateTime
 			};
 		},
 		components: {
 			Group,
 			Cell,
 			CellBox
+		},
+		methods: {
+			getLocalTime(now) {
+				var time = new Date(now);
+				alert(time);
+				var year = time.getFullYear();
+				// alert(year);
+				var month = time.getMonth() + 1;
+				var date = time.getDate();
+				var hour = time.getHours();
+				var minute = time.getMinutes();
+				if (minute === '0') {
+					minute = '00';
+				};
+				var second = time.getSeconds();
+				return year + '-' + month + '-' + date + '   ' + hour + ':' + minute + ':' + second;
+			}
+		},
+		mounted() {
+			if (this.$store.state.UserInfo.userSex === 1) {
+				this.sex = '男';
+			} else if (this.$store.state.UserInfo.userSex === 0) {
+				this.sex = '女';
+			};
 		}
 	};
 </script>

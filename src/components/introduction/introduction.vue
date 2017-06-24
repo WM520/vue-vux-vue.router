@@ -1,7 +1,7 @@
 <template>
-	<div class="content">
-		<div class="header">
-			<img src="../../assets/logo@2x.png" class="logo">
+	<div class="introduction-content">
+		<div class="introduction-header">
+			<img src="../../assets/logo@2x.png" class="introduction-logo">
 		</div>
 		<div class="bound">
 			<span>当前版本1.0</span>
@@ -15,15 +15,15 @@
 	</div>
 </template>
 <script type="text/javascript"></script>
-<style lang="stylus">
-.content
+<style lang="stylus" scorped>
+.introduction-content
 	position: relative
 	width: 100%
 	height: 100%
-	.header
-		.logo
-			padding-left: 35%
-			padding-top: 60px
+	.introduction-header
+		padding-left: 42%
+		padding-top: 60px
+		.introduction-logo
 			width: 30%
 			height: width 
 	.bound

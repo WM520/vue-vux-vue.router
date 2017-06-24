@@ -1,12 +1,12 @@
 <template>
   <div class="liveDetailContent">
   	<div class="headercontent">
-  		<img src="../../assets/teacherbg@2x.png" class="scanerImg">
-  		<h1 class="livetitle">多吃谷物少吃菜，日常生活中的养生。谷肉果菜，食养尽之，无使过之，伤其正也</h1>
-  		<router-link to="/teacher">
+  		<img :src="courseCoverImage" class="scanerImg">
+  		<h1 class="livetitle">{{ this.courseIntroduction }}</h1>
+  		<router-link :to="{name: 'Teacher', params: { teacherID : this.lecturerId }}">
   			<div class="teacher">
-	  			<img src="../../assets/logo@2x.png" class="headericon">
-	  			<span class="name">张宇  讲师</span>
+	  			<img :src="lecturerHeadImage" class="headericon">
+	  			<span class="name">{{ this.lecturerName }}  讲师</span>
   			<img src="../../assets/gobutton.png" class="headergo">
   		</div>
   		</router-link>
@@ -19,7 +19,7 @@
   		</div>
   		<div class="intructionContent">
   			<span class="text">
-  				研究表明，五谷杂粮可养五脏。俗话说“一谷补一脏”，五谷杂粮可养五脏。五谷有小米，大米，小麦，大豆，高粱。其中小米可养脾、大豆可养肾等等
+  				{{ this.courseMainIntroduction }}
   			</span>
   		</div>
   	</div>
@@ -30,20 +30,18 @@
   			<span class="intructionTitle">直播介绍</span>
   		</div>
   		<ul>
-  			<li v-for="item in courceList">
-  				<router-link to="liveaudio">
+  			<!-- 直播间的信息 -->
+  			<li v-for="item in courceList" @click="goToLive(item)">
 	  				<div class="arrangeList">
-	  					<span class="text">多吃谷物少吃菜，日常生活中的养生之道。。。<br>2017.03.16 16:00-17.00</span>
-	  					<img src="../../assets/live.png" class="isLive">
+	  					<span class="text">{{ item.roomName }}<br>2017.03.16 16:00-17.00</span>
+	  					<img src="../../assets/live.png" class="isLive" v-show="!item.roomType">
 	  				</div>
-  				</router-link>
   			</li>
   		</ul>
   	</div>
-  	<infinite-scroll :scroller="scroller" :loading="loading" @load="loadMore"/>
-  	<v-footer class="tool"></v-footer>
+  	<v-footer class="tool" :itemInfo="modal"></v-footer>
   	<!-- 分隔块3 -->
-  	<!-- <div class="recent-interval"></div> -->
+  	<div class="recent-interval"></div>
   </div>
 </template>
 
@@ -59,28 +57,101 @@ import Footer from '@/components/livedetailfooter/livedetailfooter'
  		return {
  			scroller: null,
  			loading: false,
- 			courceList: [{}, {}, {}, {}, {}]
+ 			courceList: [],
+ 			courseIntroduction: '',
+ 			courseMainIntroduction: '',
+ 			lecturerHeadImage: '',
+ 			courseCoverImage: '',
+ 			courseIsPin: '',
+ 			coursePrice: '',
+ 			isbuy: '',
+ 			lecturerName: '',
+ 			lecturerId: '',
+ 			modal: {},
+ 			courseId: '',
+ 			liveRoom: {}
  		};
  	},
  	mounted() {
  		this.scroller = this.$el;
  	},
  	methods: {
- 		loadMore() {
- 			let vue = this;
-			this.loading = true;
-			setTimeout(() => {
-				vue.getList();
-			}, 500);
- 		},
- 		getList() {
-			for (var i = 0; i < 5; i++) {
-				var item = i;
-				this.courceList.push(item);
-			};
-			this.loading = false;
-		}
- 	}
+ 		goToLive(val) {
+ 			alert(this.lecturerId);
+ 			alert(this.$store.state.UserInfo.lecturerId);
+ 			console.log(this.$store.state.UserInfo.lecturerId === this.lecturerId);
+ 			if (this.lecturerId === this.$store.state.UserInfo.lecturerId) {
+ 				if (val.roomType === 1) {
+ 					this.$router.push({ name: 'LiveAudio', params: { roomId: val.roomId }});
+ 				} else if (val.roomType === 0) {
+ 					let id = localStorage.getItem('dataid');
+		            let userID = this.$store.state.UserInfo.useID;
+		            let url = '/api/web/v1/app/findinfobyroomidanduserid?id=' + id + '&userId=' + userID + '&roomId=' + val.roomId;
+		       	    this.$http.get(url)
+		            .then((res) => {
+		                this.liveRoom = res.data.content.result;
+		                this.$router.push({ name: 'LiveRoom', params: { liveroom: this.liveRoom }});
+	                });
+ 				};
+ 			} else {
+ 				if (val.roomType === 1) {
+	 				if (this.modal.isbuy === 1) {
+	 					this.$router.push({ name: 'LiveAudio', params: { roomId: val.roomId }});
+	 				 } else {
+	 					alert('请先购买课程');
+	 				};
+	 			} else if (val.roomType === 0) {
+	 				console.log('直播介绍');
+	 				if (this.modal.isbuy === 1) {
+	 					let id = localStorage.getItem('dataid');
+		                let userID = this.$store.state.UserInfo.useID;
+		                console.log(this.$store.state.UserInfo.useID);
+		                let url = '/api/web/v1/app/findinfobyroomidanduserid?id=' + id + '&userId=' + userID + '&roomId=' + val.roomId;
+		                console.log(url);
+		                this.$http.get(url)
+		                .then((res) => {
+		                    this.liveRoom = res.data.content.result;
+		                    this.$router.push({ name: 'LiveRoom', params: { liveroom: this.liveRoom }});
+		                });
+	 				} else {
+	 					alert('请先购买课程');
+	 				};
+ 				};
+ 			};
+ 		}
+ 	},
+ 	beforeRouteEnter (to, from, next) {
+		next(vm => {
+			// 获取课程详情
+	 		let id = localStorage.getItem('dataid');
+	 		let userID = vm.$store.state.UserInfo.useID;
+	 		let courseId = to.params.id;
+	 		console.log(courseId !== undefined);
+	 		// 判断是带参数进入还是不带参数
+	 		if (courseId !== undefined) {
+	 			vm.courseId = courseId;
+	 		};
+	 		console.log(vm.courseId);
+	 		let url = '/api/web/v1/app/findcoursebyid?id=' + id + '&courseId=' + vm.courseId + '&userId=' + userID;
+	 		alert(url);
+	 		console.log(url);
+			vm.$http.get(url)
+			.then((res) => {
+				console.log(res.data);
+				var modal = res.data.content.result;
+				vm.modal = modal;
+				console.log(vm.modal);
+				vm.courceList = modal.courseRooms;
+				vm.courseIntroduction = modal.courseIntroduction;
+				vm.courseCoverImage = vm.$store.state.UserInfo.hostURL + modal.courseCoverImage;
+				vm.lecturerHeadImage = modal.lecturerHeadImage;
+				vm.lecturerName = modal.lecturerName;
+				vm.courseMainIntroduction = modal.courseMainIntroduction;
+				vm.lecturerId = modal.lecturerId;
+				vm.lecturerHeadImage = vm.$store.state.UserInfo.hostURL + modal.lecturerHeadImage;
+			});
+		});
+    }
  };
 </script>
 

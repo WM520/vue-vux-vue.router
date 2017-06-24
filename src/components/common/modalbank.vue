@@ -25,7 +25,7 @@ import cartcontrol from '@/components/cartcontrol/cartcontrol';
 	export default {
 		props: {
 			count: 0,
-			totalPrice: 0
+			totalPrice: 0,
 		},
 		data() {
 			return {

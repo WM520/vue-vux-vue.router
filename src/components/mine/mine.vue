@@ -3,14 +3,14 @@
 
 		<group>
 			<cell :title="userName"  :link="{name:'MineDetail'}" is-link>
-				<img slot="icon" src="../../assets/withdrawal@2x.png" style="display:block; margin-right:5px; width:60px; -webkit-border-radius: 50px">
+				<img slot="icon" :src=iconImg style="display:block; margin-right:5px; width:60px; -webkit-border-radius: 50px">
 			</cell>
 		</group>
 		<group>
-			<cell title="我的课程"  :link="{path:'/mycourse'}" is-link>
+			<cell title="我的课程"  :link="{name:'MyCourse'}" is-link>
 				<img slot="icon" src="../../assets/mycourse.png" style="display:block; margin-right:10px" width="16">
 			</cell>
-	      	<cell title="我的订单"  :link="{path:'/myorder'}" is-link>
+	      	<cell title="我的订单"  :link="{name:'MyOrder'}" is-link>
 	      		<img slot="icon" src="../../assets/myorder.png" style="display:block; margin-right:5px" width="16">
 	      	</cell>
 		</group>
@@ -20,10 +20,10 @@
 			</cell>
 		</group>
       	<group>
-      		<cell title="青枝介绍" :link="{path:'/introduction'}" is-link>
+      		<cell title="青枝介绍" :link="{name:'Introduction'}" is-link>
       			<img slot="icon" src="../../assets/qingzhiintroduction.png" style="display:block; margin-right:5px" width="16">
       		</cell>
-      		<cell title="意见反馈"  :link="{path:'/feedback'}" is-link>
+      		<cell title="意见反馈"  :link="{name:'FeedBack'}" is-link>
       			<img slot="icon" src="../../assets/feedback.png" style="display:block; margin-right:5px" width="16">
       		</cell>
       	</group>
@@ -40,8 +40,9 @@
 		},
 		data() {
 			return {
-				isTeacher: false,
-				userName: '微信名'
+				isTeacher: this.$store.state.UserInfo.userIsLecturer,
+				userName: this.$store.state.UserInfo.userName,
+				iconImg: this.$store.state.UserInfo.headimgurl
 			};
 		}
 	};

@@ -7,7 +7,7 @@
 			<div class="modalcontent">
 				<div class="price-wrapper">
 					<span class="title">提现金额</span>
-					<input class="priceCount" type="text" checked="checked">
+					<input class="priceCount" type="text" checked="checked" v-model="totalPrice">
 					元
 				</div>
 				<div class="userInformation-wrapper">
@@ -32,15 +32,12 @@
 <script type="text/javascript">
 import cartcontrol from '@/components/cartcontrol/cartcontrol';
 	export default {
-		props: {
-			count: 0,
-			totalPrice: 0
-		},
 		data() {
 			return {
 				priceObject: {
 					type: Object
-				}
+				},
+				totalPrice: ''
 			};
 		},
 		components: {
@@ -51,7 +48,7 @@ import cartcontrol from '@/components/cartcontrol/cartcontrol';
 				this.$emit('hideGiveFriend');
 			},
 			commitAction() {
-				this.$emit('commitAction');
+				this.$emit('commitAction', this.totalPrice);
 			}
 		}
 	};

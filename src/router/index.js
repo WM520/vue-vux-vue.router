@@ -18,6 +18,8 @@ import BankCard from '@/components/myteacher/bankCard';
 import LiveAudio from '@/components/liveaudio/liveaudio';
 import Teacher from '@/components/livedetail/teacher';
 import MineDetail from '@/components/mine/minedetail';
+import LiveRoom from '@/components/LiveRoom';
+
 
 Vue.use(Router);
 
@@ -113,6 +115,11 @@ export default new Router({
       path: '/minedetail',
       name: 'MineDetail',
       component: MineDetail
+    },
+    {
+        path: '/liveroom',
+        name: 'LiveRoom',
+        component: LiveRoom
     }
   ]
 });

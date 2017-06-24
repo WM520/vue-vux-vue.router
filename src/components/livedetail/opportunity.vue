@@ -1,13 +1,13 @@
 <template>
 	<div class="opportunity-wrap">
 		<div class="opportunity-topHeaderDiv">
-			<img src="../../assets/grain.jpg" alt="" class="opportunity-img-Grain">
-			<div class="opportunity-introduce-Text">多吃谷物少吃菜,日常生活中的养生之道。谷肉果菜，食养尽之，无使过之，伤其正也。</div>
+			<img :src="this.$store.state.UserInfo.hostURL + courseDetail.courseLogo" alt="" class="opportunity-img-Grain">
+			<div class="opportunity-introduce-Text">{{ courseDetail.courseName }}</div>
 			<span class="opportunity-price">拼课价:</span>
-			<span class="opportunity-now-money">￥500</span>
-			<span class="opportunity-oldPrice">原价:￥800</span>
+			<span class="opportunity-now-money">￥{{ courseDetail.pinPrice }}</span>
+			<span class="opportunity-oldPrice">原价:￥{{ courseDetail.coursePrice }}</span>
 			<img src="../../assets/6.png" height="25" width="65" class="opportunity-flag">
-			<div class="opportunity-peopleNumberBox">10人团</div>
+			<div class="opportunity-peopleNumberBox">{{ courseDetail.scale }}人团</div>
 		</div>
 
 
@@ -17,10 +17,9 @@
 		<!-- 拼课名额部分 -->
 		<div class="opportunity-places">
 			<img src="../../assets/7.png" height="16" width="15" class="opportunity-hourglass">
-			<span class="opportunity-placesText">仅剩3个机会</span>
-			<router-link to="/fightcourse">
-				<button class="opportunity-success">我要拼课</button>
-			</router-link>
+			<span class="opportunity-placesText" v-show="!(courseDetail.scale - courseDetail.pinNum)">拼课机会已被抢光</span>
+			<span class="opportunity-placesText" v-show="(courseDetail.scale - courseDetail.pinNum)">还有{{ courseDetail.scale - courseDetail.pinNum }}个拼课机会</span>
+			<button class="opportunity-success" v-show="courseDetail.scale - courseDetail.pinNum" @click="pay">我要拼课</button>
 		</div>
 
 		
@@ -56,15 +55,77 @@ export default {
 		return {
 			courseDetail: {
 				type: Object
-			}
+			},
+			opportunity: {},
+			isbuy: false
 		};
 	},
 	components: {
 		// Tab
+	},
+	mounted() {
+		console.log(this.$route.params);
+		console.log(this.$router);
+		// if (this.$route.params.opportunity.isbuy === '1') {
+		// 	this.isbuy = true;
+		// } else {
+		// 	this.isbuy = false;
+		// };
+		let id = localStorage.getItem('dataid');
+		// let userID = this.$store.state.UserInfo.useID;
+		let url = this.$store.state.UserInfo.appendURL + 'findgroupcoursebycourseid?id=' + id + '&courseId=' + this.$route.params.opportunity.courseId;
+		this.$http.get(url)
+		.then((res) => {
+			console.log(res);
+			this.courseDetail = res.data.content.result;
+		});
+	},
+	methods: {
+		pay() {
+			alert('付款');
+			// 拼课支付
+			var params = {
+				id: localStorage.getItem('dataid'),
+				ubrPayType: '0',
+				ubrCourseType: '2',
+				ubrBuyNum: '1',
+				ubrUserId: this.$store.state.UserInfo.useID,
+				ubrCoursePrice: this.courseDetail.pinPrice,
+				ubrCourseId: this.$route.params.opportunity.courseId
+			};
+			let url = 'api/web/v1/app/createorder';
+			this.$http.post(url, params)
+			.then((res) => {
+				console.log(res);
+				alert(res.data.content.result.orderNum);
+				if (res.data.content.is_success === true) {
+					let payurl = 'api/web/wx/wxpay?id=' + localStorage.getItem('dataid') + '&orderNumber=' + res.data.content.result.orderNum + '&total_fee=' + '1' + '&openid=' + this.$store.state.UserInfo.openID;
+					alert(payurl);
+					this.$http.get(payurl)
+					.then((res) => {
+						console.log(res);
+						let payload = {};
+						payload.timestamp = res.data.timeStamp;
+						payload.appId = res.data.appId;
+						payload.nonceStr = res.data.nonceStr;
+						payload.package = res.data.package;
+						payload.paySign = res.data.paySign;
+						payload.signType = res.data.signType;
+						payload.success_callback = this.paySuccess;
+						this.$store.dispatch('wechatPay', payload);
+					});
+				} else {
+					alert('服务端异常');
+				};
+			});
+		},
+		paySuccess(res) {
+			console.log(res);
+		}
 	}
 };
 </script>
-<style type="text/css">
+<style type="text/css" scroped>
 	body{
 		background-color:#fafafa;
 	}

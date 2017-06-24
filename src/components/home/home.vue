@@ -2,7 +2,7 @@
 	<div class="homeContent" ref="home">
 		<div v-if="tabbarSelect.info === '首页'">
 			<!-- 轮播 -->
-			<v-header></v-header>
+			<v-header :imgURL="imgURL"></v-header>
 			<div class="liveContent">
 				<div class="recent-wrapper">
 					<div class="recent-header">
@@ -13,33 +13,37 @@
 				<ul>
 					<!-- 课程列表 -->
 					<li v-for= "item in homeArray">
-						<router-link to="livedetail">
+						<router-link :to="{name:'LiveDetail', params: { id:item.courseId }}">
 							<div id="recentcontent">
 								<div id="topImgDiv">
 									<img src="../../assets/grain.jpg" alt="" class="imgGrain">
 									<div class="begin"></div>
 									<span class="beginText">即将开始</span>
-									<div class="introduceText">多吃谷物少吃菜,日常生活中的养生之道。谷肉果菜，食养尽之，无使过之，伤其正也。
+									<div class="introduceText">
+										{{ item.courseName }}
 									</div>
-									<p class="introduceFoodText">饮食养生其实就是让身体的本能去顺应...</p>
+									<p class="introduceFoodText">{{ item.courseIntroduction }}</p>
 									<img src="../../assets/lecturer@2x.png" class="userIcon">
-									<span class="userName">曲黎敏</span>
+									<span class="userName">{{ item.lecturerName }}</span>
 									<img src="../../assets/heat@2x.png" class="fire">
-									<span class="fireNumber">234567次</span>
+									<span class="fireNumber">{{ item.chViewCount }}次</span>
 									<!-- 是否已经购买的判断 -->
-									<img src="../../assets/buyed@2x.png" class="purchase">
-									<span class="money">￥300</span>
+									<img src="../../assets/buyed@2x.png" class="purchase" v-show="item.isBuy">
+									<span class="money">￥{{ item.coursePrice }}</span>
 								</div>
 							</div>
 						</router-link>
 					</li>
 				</ul>
+				<!-- 分隔块3 -->
+  				<div class="recent-interval"></div>
 			</div>
-			<infinite-scroll :scroller="scroller" :loading="loading" @load="loadMore"/>
+			<!-- <infinite-scroll :scroller="scroller" :loading="loading" @load="loadMore"/> -->
 		</div>
 		<div v-else>
 			<mine></mine>
 		</div>
+		<!-- <v-footer :tabSelect="tabbarSelect" @choosemine="choosemine" @choosehome="choosehome"></v-footer> -->
 		<v-footer :tabSelect="tabbarSelect"></v-footer>
 	</div>
 </template>
@@ -50,26 +54,17 @@ import Mine from '@/components/mine/mine';
 	export default {
 		data () {
 			return {
-				homeArray: [
-					{
-						topic_id: '1510',
-						topic_type: 'shiji',
-						pic: 'http://image.shougongke.com/topic/main/1493878194_73rbwkcanj.jpg@!home_page',
-						subject: '众筹｜这支笔，让你重新爱上书写',
-						template: '4',
-						mob_h5_url: 'http://www.shougongke.com/index.php?m=Topic&a=topicDetail&topic_id=1510&topic_type=shiji&funding_id=33&is_old=1'
-					},
-					{}, {}, {}, {}
-				],
+				homeArray: [],
 				currentSelect: '单直播间',
 				tabbarSelect: {
 					info: '首页'
 				},
 				index: 0,
 				bottomCount: 20,
-				scroller: null,
+				// scroller: null,
 				loading: false,
-				refreshing: false
+				refreshing: false,
+				imgURL: []
 			};
 		},
 		components: {
@@ -79,38 +74,32 @@ import Mine from '@/components/mine/mine';
 		},
 		mounted() {
 			if (!window.localStorage.tabSelect) {
-			// console.log(window.localStorage.tabSelect);
 				window.localStorage.tabSelect = this.tabbarSelect.info;
-				// this.tabbarSelect.info = window.localStorage.tabSelect;
 				console.log(window.localStorage.tabSelect);
 			} else {
 				this.tabbarSelect.info = window.localStorage.tabSelect;
 			};
-			this.scroller = this.$el;
+			// this.scroller = this.$el;
+			// 获取banner
+			let id = localStorage.getItem('dataid');
+			let url = 'api/web/v1/app/findallbanner?id=' + id;
+				this.$http.get(url)
+				.then((res) => {
+					var imgURL = res.data.content.result;
+					if (imgURL === null) { return; };
+					for (var i = 0; i < imgURL.length; i++) {
+						var imgObject = {};
+						imgObject.img = 'http://192.168.0.126:38080' + imgURL[i].mbUrl;
+						imgObject.title = imgURL[i].mbImage;
+						imgObject.url = 'http://qingzz.com/';
+						this.imgURL.push(imgObject);
+					}
+				}, (err) => {
+					console.log(err);
+				});
+				this.getList();
 		},
 		methods: {
-			onScrollBottom() {
-				if (this.onFetching) {
-					// do nothing
-				} else {
-					this.onFetching = true;
-					setTimeout(() => {
-						var item = {};
-						if (this.homeArray.length > 5) {
-							this.onFetching = false;
-							this.$nextTick(() => {
-								this.$refs.scrollerBottom.reset();
-							});
-							return;
-						};
-						this.homeArray.push(item);
-						this.$nextTick(() => {
-							this.$refs.scrollerBottom.reset();
-						});
-						this.onFetching = false;
-					}, 2000);
-				};
-			},
 			// 上拉加载更多
 			loadMore() {
 				let vue = this;
@@ -120,12 +109,38 @@ import Mine from '@/components/mine/mine';
 				}, 500);
 			},
 			getList() {
-				for (var i = 0; i < 5; i++) {
-					var item = i;
-					this.homeArray.push(item);
-				};
-				this.loading = false;
+				// 获取课程列表
+				let id = localStorage.getItem('dataid');
+				let url = 'api/web/v1/app/findallcourse' + '?id=' + id + '&page=' + '1' + '&size=' + '5';
+				// alert(url);
+				this.$http.get(url)
+				.then((res) => {
+					var courceList = res.data.content.result;
+					console.log(courceList);
+					this.homeArray = courceList;
+				});
 			}
+			// choosemine() {
+			// 	console.log('choosemine');
+			// 	document.title = '我的青枝';
+			// },
+			// choosehome() {
+			// 	console.log('choosehome');
+			// 	document.title = '首页';
+			// }
+		},
+		beforeRouteEnter (to, from, next) {
+			next(vm => {
+				let id = localStorage.getItem('dataid');
+				let url = 'api/web/v1/app/findallcourse' + '?id=' + id + '&page=' + '1' + '&size=' + '5';
+				// alert(url);
+				vm.$http.get(url)
+				.then((res) => {
+					var courceList = res.data.content.result;
+					console.log(courceList);
+					vm.homeArray = courceList;
+				});
+			});
 		}
 	};
 </script>
@@ -135,6 +150,7 @@ import Mine from '@/components/mine/mine';
 		width: 100vw;
 		height: 100vh;
 		overflow: auto;
+/*
 		transition: transform 0.3s ease;
 		-webkit-overflow-scrolling: touch;
 	}
@@ -298,5 +314,9 @@ import Mine from '@/components/mine/mine';
 		line-height: 18px;
 		padding-left: 10px;
 		padding-top: 7px;
+	}
+	.recent-interval {
+		width: 100%;
+		height:70px;
 	}
 </style>

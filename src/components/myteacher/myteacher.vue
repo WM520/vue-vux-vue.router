@@ -2,7 +2,7 @@
 	<div class="myteacher-wrap">
 		<!-- 顶部 -->
 		<div class="myteacher-teacher-top">
-			<span>讲师名</span>
+			<span>{{ teacherInfo.lecturerWxName }}</span>
 			<!-- 头像部分 -->
 			<div class="myteacher-teacher-portrait">
 				<img src="../../assets/LF.jpg">
@@ -14,9 +14,9 @@
 		<!-- 提现和直播内容部分 -->
 
 		<ul class="myteacher-withdrawals-box">
-			<li><router-link to="mywallet"><img src="../../assets/wallet.png"><span class="myteacher-withdrawals-number">1500<span class="myteacher-withdrawals-individual">&nbsp;元</span></span></router-link></li>
+			<li><router-link to="MyWallet"><img src="../../assets/wallet.png"><span class="myteacher-withdrawals-number">{{ teacherInfo.lecturerMoney }}<span class="myteacher-withdrawals-individual">&nbsp;元</span></span></router-link></li>
 			
-			<li><router-link to="mycourse"><img src="../../assets/directSeeding.png"><span class="myteacher-withdrawals-number">2<span class="myteacher-withdrawals-individual">&nbsp;条</span></span></router-link></li>
+			<li><router-link to="MyCourse"><img src="../../assets/directSeeding.png"><span class="myteacher-withdrawals-number">{{ teacherInfo.lecturerStatus }}<span class="myteacher-withdrawals-individual">&nbsp;条</span></span></router-link></li>
 		</ul>
 
 		<!-- 隔断块 -->
@@ -31,34 +31,53 @@
 		<!-- 讲师介绍文字部分 -->
 		<div class="myteacher-AboutInstructor-text-box">
 			<div class="myteacher-field">擅长领域 : <span>公共关系学</span></div>
-			<div class="myteacher-Characteristic">特点/背景 : <span>高级心理保健师婚姻情感顾问从事心理咨询工作已达十余年之久积累了丰富的实战经验和成功案例其业务范围涉及:情感、家庭矛盾、子女教育、老年心理等各个方面另外还提供专职的私人心理保健.曾做客《河南法制频道》</span></div>
+			<div class="myteacher-Characteristic">特点/背景 : <span>{{ teacherInfo.lecturerIntroduction }}</span></div>
 			<img src="../../assets/LF.jpg" height="576" width="1024" alt="">
 		</div>
 	</div>
 </template>
 <script type="text/javascript">
 // import Vue from 'vue';
+import { Alert } from 'vux';
 	export default {
 		beforeRouteEnter (to, from, next) {
 			console.log(to.params);
-			if (to.params.isTeacher) {
-				next();
+			if (to.params.isTeacher || to.params.isTeacher === undefined) {
+				next(vm => {
+					let id = localStorage.getItem('dataid');
+					let lecturerId = vm.$store.state.UserInfo.lecturerId;
+					let url = 'api/web/v1/app/findlecturerbyid?id=' + id + '&lecturerId=' + lecturerId;
+					vm.$http.get(url)
+					.then((res) => {
+						console.log(res);
+						vm.teacherInfo = res.data.content.result;
+					});
+				});
 			} else {
 				alert('您还不是讲师');
+			};
+		},
+		components: {
+			Alert
+		},
+		data() {
+			return {
+				teacherInfo: {}
 			};
 		}
 	};
 </script>
-<style type="text/css">
+<style type="text/css" scroped>
 	
 	.myteacher-wrap{
 		width:100%;
 		height:100%;
 		max-width:750px;
+		padding: 0 !important;
 	}
 	.myteacher-teacher-top{
 		width:100%;
-		height:160px;
+		height:100px;
 		background-image: url("../../assets/teacherImg.png");
 		background-size:100% 100%;
 		display:flex;

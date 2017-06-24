@@ -51,7 +51,7 @@
 <script>
 	
 </script>
-<style type="text/css">
+<style type="text/css" scroped>
 	#content{
 		width:100%;
 		height:100%;

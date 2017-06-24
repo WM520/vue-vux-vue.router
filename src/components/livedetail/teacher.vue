@@ -8,14 +8,36 @@
 
 		<!-- 讲师介绍文字部分 -->
 		<div class="myteacher-AboutInstructor-text-box">
-			<div class="myteacher-field">擅长领域 : <span>公共关系学</span></div>
-			<div class="myteacher-Characteristic">特点/背景 : <span>高级心理保健师婚姻情感顾问从事心理咨询工作已达十余年之久积累了丰富的实战经验和成功案例其业务范围涉及:情感、家庭矛盾、子女教育、老年心理等各个方面另外还提供专职的私人心理保健.曾做客《河南法制频道》</span></div>
-			<img src="../../assets/LF.jpg" height="576" width="1024" alt="">
+			<!-- <div class="myteacher-field">擅长领域 : <span>公共关系学</span></div> -->
+			<div class="myteacher-Characteristic">特点/背景 : <span>{{ lecturerIntroduction }}</span></div>
+			<img :src="lecturerHeadImage" height="576" width="1024" alt="">
 		</div>
 	</div>
 </template>
-<script type="text/javascript"></script>
-<style type="text/css">
+<script type="text/javascript">
+	export default {
+		mounted() {
+			let id = localStorage.getItem('dataid');
+			alert(this.$route.params);
+			console.log(this.$route.params);
+			let url = '/api/web/v1/app/findlecturerbyid?id=' + id + '&lecturerId=' + this.$route.params.teacherID;
+			alert(url);
+			this.$http.get(url)
+			.then((res) => {
+				console.log(res);
+				this.lecturerHeadImage = this.$store.state.UserInfo.hostURL + res.data.content.result.lecturerHeadImage;
+				this.lecturerIntroduction = res.data.content.result.lecturerIntroduction;
+			});
+		},
+		data() {
+			return {
+				lecturerHeadImage: '',
+				lecturerIntroduction: ''
+			};
+		}
+	};
+</script>
+<style type="text/css" scroped>
 	
 	.myteacher-wrap{
 		width:100%;

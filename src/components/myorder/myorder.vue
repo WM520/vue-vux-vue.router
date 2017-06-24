@@ -1,139 +1,139 @@
 <template>
 	<div class="myorder-box">
+
+		<!-- <blankpage v-show="courseArray.length === 0"><span>您还没有购买课程</span></blankpage> -->
 		<!-- 导航栏部分 -->
-		<div class="myorder-Nav-box">
-			<tab>
-		      <tab-item selected @on-item-click="onItemClick">普通</tab-item>
-		      <tab-item @on-item-click="onItemClick">赠礼</tab-item>
-		      <tab-item @on-item-click="onItemClick">评课</tab-item>
-    		</tab>
+		<div>
+			<div class="myorder-Nav-box">
+				<tab>
+			      <tab-item selected @on-item-click="onItemClick">普通</tab-item>
+			      <tab-item @on-item-click="onItemClick">赠礼</tab-item>
+			      <tab-item @on-item-click="onItemClick">拼课</tab-item>
+	    		</tab>
+			</div>
+			<!-- 介绍部分 -->
+				<ul>
+					<li v-for="item in displayArray">
+						<router-link :to="{name:'OrderDetails', params: { orderid:item.orderId }}">
+							<!-- 订单号部分 -->
+						<div class="myorder-orderNumber-box">
+							<!-- 订单号部分 -->
+							<span class="myorder-orderNumber">
+								订单号:{{ item.orderNumber }}
+							</span>
+
+							<!-- 已经领取部分 -->
+							<span class="myorder-orderNumber-text">
+								已领取光
+							</span>
+						</div>
+						<div class="myorder-topImgDiv">
+							<!-- 阿里云的图片处理 -->
+							<!-- <img :src="item.imgUrl" alt="" class="myorder-imgGrain"> -->
+							<img src="../../assets/grain.jpg" alt="" class="myorder-imgGrain">
+							<div class="myorder-introduceText" >{{ item.courseName }}</div>
+							<span class="myorder-introduceFoodText">{{ item.courseIntroduction }}</span>
+							<img src="../../assets/lecturer@2x.png" class="myorder-userIcon">
+							<span class="myorder-userName">{{ item.lecturerName }}</span>
+							<img src="../../assets/heat@2x.png" class="myorder-fire">
+							<span class="myorder-fireNumber">{{ item.chViewCount }}</span>
+							<span class="myorder-money">{{ item.coursePrice }}</span>
+							<img src="../../assets/zengli.png" height="12" width="12" class="myorder-gift-icon">
+							<span class="myorder-gift-number">{{ item.scale }}<span>份</span></span>
+						</div>
+						</router-link>
+					</li>
+				</ul>
+<!-- 			<infinite-scroll :scroller="scroller" :loading="loading" @load="loadMore"/> -->
 		</div>
-
-
-	
-
-		<!-- 介绍部分 -->
-		<router-link to="orderdetails">
-			<ul>
-				<li v-for="item in orderList">
-						<!-- 订单号部分 -->
-					<div class="myorder-orderNumber-box">
-						<!-- 订单号部分 -->
-						<span class="myorder-orderNumber">
-							订单号:20170016254
-						</span>
-
-						<!-- 已经领取部分 -->
-						<span class="myorder-orderNumber-text">
-							已领取光
-						</span>
-					</div>
-					<div class="myorder-topImgDiv">
-						<img :src="item.imgUrl" alt="" class="myorder-imgGrain">
-						
-						<div class="myorder-introduceText" >{{ item.title }}</div>
-						<span class="myorder-introduceFoodText">{{ item.introduceText }}</span>
-						<img src="../../assets/lecturer@2x.png" class="myorder-userIcon">
-						<span class="myorder-userName">{{ item.name }}</span>
-						<img src="../../assets/heat@2x.png" class="myorder-fire">
-						<span class="myorder-fireNumber">{{ item.browseCount }}</span>
-						<span class="myorder-money">{{ item.price }}</span>
-						<img src="../../assets/zengli.png" height="12" width="12" class="myorder-gift-icon">
-						<span class="myorder-gift-number">5<span>份</span></span>
-					</div>
-				</li>
-			</ul>
-		</router-link>
-		<infinite-scroll :scroller="scroller" :loading="loading" @load="loadMore"/>
 	</div>
 </template>
 <script type="text/javascript">
 import { Tab, TabItem } from 'vux';
+import BlankPage from '@/components/blankpages/blankpages';
 	export default {
 		data() {
 			return {
-				orderList: [{
-				imgUrl: require('../../assets/grain.jpg'),
-				title: '多吃谷物少吃菜,日常生活中的养生之道。谷肉果菜，食养尽之，无使过之，伤其正也。',
-				introduceText: '饮食养生其实就是让身体的本能去顺应...',
-				userName: '曲黎敏',
-				browseCount: '10000',
-				price: '$200'
-				}, {
-				imgUrl: require('../../assets/grain.jpg'),
-				title: '多吃谷物少吃菜,日常生活中的养生之道。谷肉果菜，食养尽之，无使过之，伤其正也。',
-				introduceText: '饮食养生其实就是让身体的本能去顺应...',
-				userName: '曲黎敏',
-				browseCount: '10000',
-				price: '$200'
-				}],
-				loading: false,
-				scroller: null
+				// loading: false,
+				// scroller: null,
+				courseArray: [],
+				displayArray: [],
+				normalArray: [],
+				sendArray: [],
+				pingkeArray: []
 			};
 		},
 		components: {
 			Tab,
-			TabItem
+			TabItem,
+			blankpage: BlankPage
 		},
 		methods: {
 			onItemClick(val) {
 				if (val === 0) {
-					this.orderList.pop();
+					this.displayArray = this.normalArray;
 				} else if (val === 1) {
-					var item = {
-								imgUrl: require('../../assets/grain.jpg'),
-								title: '多吃谷物少吃菜,日常生活中的养生之道。谷肉果菜，食养尽之，无使过之，伤其正也。',
-								introduceText: '饮食养生其实就是让身体的本能去顺应...',
-								userName: '曲黎敏',
-								browseCount: '10000',
-								price: '$200'
-							};
-					this.orderList.push(item);
+					this.displayArray = this.sendArray;
 				} else if (val === 2) {
-					var item1 = {
-								imgUrl: require('../../assets/grain.jpg'),
-								title: '多吃谷物少吃菜,日常生活中的养生之道。谷肉果菜，食养尽之，无使过之，伤其正也。',
-								introduceText: '饮食养生其实就是让身体的本能去顺应...',
-								userName: '曲黎敏',
-								browseCount: '10000',
-								price: '$200'
-								};
-					var item2 = {
-								imgUrl: require('../../assets/grain.jpg'),
-								title: '多吃谷物少吃菜,日常生活中的养生之道。谷肉果菜，食养尽之，无使过之，伤其正也。',
-								introduceText: '饮食养生其实就是让身体的本能去顺应...',
-								userName: '曲黎敏',
-								browseCount: '10000',
-								price: '$200'
-							};
-					this.orderList.push(item1);
-					this.orderList.push(item2);
+					this.displayArray = this.pingkeArray;
 				};
-			},
-			loadMore() {
-				let vue = this;
-				this.loading = true;
-				setTimeout(() => {
-					vue.getList();
-				}, 500);
-			},
-			getList() {
-				for (var i = 0; i < 5; i++) {
-					var item = {
-								imgUrl: require('../../assets/grain.jpg'),
-								title: '多吃谷物少吃菜,日常生活中的养生之道。谷肉果菜，食养尽之，无使过之，伤其正也。',
-								introduceText: '饮食养生其实就是让身体的本能去顺应...',
-								userName: '曲黎敏',
-								browseCount: '10000',
-								price: '$200'
-							};
-					this.orderList.push(item);
-				};
-				this.loading = false;
 			}
+			// loadMore() {
+			// 	let vue = this;
+			// 	this.loading = true;
+			// 	setTimeout(() => {
+			// 		vue.getList();
+			// 	}, 500);
+			// },
+			// getList() {
+			// 	for (var i = 0; i < 5; i++) {
+			// 		var item = {
+			// 					imgUrl: require('../../assets/grain.jpg'),
+			// 					title: '多吃谷物少吃菜,日常生活中的养生之道。谷肉果菜，食养尽之，无使过之，伤其正也。',
+			// 					introduceText: '饮食养生其实就是让身体的本能去顺应...',
+			// 					userName: '曲黎敏',
+			// 					browseCount: '10000',
+			// 					price: '$200'
+			// 				};
+			// 		this.orderList.push(item);
+			// 	};
+			// 	this.loading = false;
+			// }
 		},
 		mounted() {
-			this.scroller = this.$el;
+			// this.scroller = this.$el;
+		},
+		beforeRouteEnter (to, from, next) {
+			next(vm => {
+				// 获取订单详情
+				let userID = vm.$store.state.UserInfo.useID;
+				let id = localStorage.getItem('dataid');
+				let url = vm.$store.state.UserInfo.appendURL + 'findorderbyuserid?id=' + id + '&userId=' + userID;
+				// alert(url);
+				vm.$http.get(url)
+				.then((res) => {
+					if (vm.courseArray.length === res.data.content.result.length) {
+						return;
+					};
+					vm.courseArray = [];
+					vm.normalArray = [];
+					vm.sendArray = [];
+					vm.pingkeArray = [];
+					vm.displayArray = [];
+					console.log(res.data);
+					vm.courseArray = res.data.content.result;
+					for (var i = 0; i < vm.courseArray.length; i++) {
+						if (vm.courseArray[i].orderType === 0) {
+							vm.normalArray.push(vm.courseArray[i]);
+						} else if (vm.courseArray[i].orderType === 1) {
+							vm.sendArray.push(vm.courseArray[i]);
+						} else if (vm.courseArray[i].orderType === 2) {
+							vm.pingkeArray.push(vm.courseArray[i]);
+						};
+					};
+					vm.displayArray = vm.normalArray;
+				});
+			});
 		}
 	};
 </script>
