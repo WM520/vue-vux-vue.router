@@ -50,7 +50,13 @@
 	</div>
 </template>
 <script type="text/javascript">
+import { mapState } from 'vuex';
 export default {
+	computed: {
+        ...mapState({
+            common_request_base_url: state => state.common.common_request_base_url 
+        })
+    },
 	data() {
 		return {
 			courseDetail: {
@@ -73,7 +79,7 @@ export default {
 		// };
 		let id = localStorage.getItem('dataid');
 		// let userID = this.$store.state.UserInfo.useID;
-		let url = this.$store.state.UserInfo.appendURL + 'findgroupcoursebycourseid?id=' + id + '&courseId=' + this.$route.params.opportunity.courseId;
+		let url = this.common_request_base_url + this.$store.state.UserInfo.appendURL + 'findgroupcoursebycourseid?id=' + id + '&courseId=' + this.$route.params.opportunity.courseId;
 		this.$http.get(url)
 		.then((res) => {
 			console.log(res);
@@ -93,13 +99,13 @@ export default {
 				ubrCoursePrice: this.courseDetail.pinPrice,
 				ubrCourseId: this.$route.params.opportunity.courseId
 			};
-			let url = 'api/web/v1/app/createorder';
+			let url = this.common_request_base_url + 'api/web/v1/app/createorder';
 			this.$http.post(url, params)
 			.then((res) => {
 				console.log(res);
 				alert(res.data.content.result.orderNum);
 				if (res.data.content.is_success === true) {
-					let payurl = 'api/web/wx/wxpay?id=' + localStorage.getItem('dataid') + '&orderNumber=' + res.data.content.result.orderNum + '&total_fee=' + '1' + '&openid=' + this.$store.state.UserInfo.openID;
+					let payurl = this.common_request_base_url + 'api/web/wx/wxpay?id=' + localStorage.getItem('dataid') + '&orderNumber=' + res.data.content.result.orderNum + '&total_fee=' + '1' + '&openid=' + this.$store.state.UserInfo.openID;
 					alert(payurl);
 					this.$http.get(payurl)
 					.then((res) => {
@@ -193,9 +199,9 @@ export default {
 		width:3.4rem;
 		height:1.4rem;
 		position:absolute;
-		top:5.04rem;
+		top:5.3rem;
 		right:0;
-		font-size:0.4rem;
+		font-size:0.7rem;
 		color:white;
 		text-align:center;
 		line-height:1.4rem;

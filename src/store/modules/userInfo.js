@@ -9,7 +9,7 @@ const state = {
 	count: 0,
 	useID: '',
 	hostURL: 'http://192.168.0.126:38080',
-	appendURL: '/api/web/v1/app/',
+	appendURL: 'api/web/v1/app/',
 	isLogin: false,
 	userSex: '',
 	userProvince: '',

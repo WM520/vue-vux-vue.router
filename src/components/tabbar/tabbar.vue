@@ -38,7 +38,7 @@
 				} else {
 					this.selectedtab = 0;
 					this.tabSelect.info = '首页';
-					document.title = '首页';
+					// document.title = '首页';
 					this.homeImg = require('./homeselect.png');
 					this.mineImg = require('./minenormal.png');
 					window.localStorage.tabSelect = '首页';
@@ -50,7 +50,7 @@
 				if (this.selectedtab === 0) {
 					this.selectedtab = 1;
 					this.tabSelect.info = '我的青枝';
-					document.title = '我的青枝';
+					// document.title = '我的青枝';
 					this.homeImg = require('./homenormal.png');
 					this.mineImg = require('./mineselect.png');
 					window.localStorage.tabSelect = '我的青枝';

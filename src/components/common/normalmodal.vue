@@ -8,8 +8,8 @@
 				<img src="../../assets/paysucceed@2x.png" class="payimg">
 				<span class="pay">支付成功</span>
 				<span class="title">多吃谷物少吃菜，日常生活中的养生。谷肉果菜，食养尽之，无使过之，伤其正也</span>
-				<span class="carttitle">赠送数量</span>
-				<span class="cartcontrol"> {{ count }}</span>
+				<span class="carttitle">购买数量</span>
+				<span class="cartcontrol">1</span>
 				<span class="total">合计</span>
 				<span class="price">{{ totalPrice }}</span>
 				<div class="modalcommit" @click="commitAction">
@@ -156,7 +156,7 @@ import cartcontrol from '@/components/cartcontrol/cartcontrol';
 					background: #ef5350
 					.commitspan
 						position: absolute
-						left: 30%
+						left: 35%
 						top: 28%
 						text-align: center
 						font-size: 20px

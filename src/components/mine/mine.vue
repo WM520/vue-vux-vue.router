@@ -32,7 +32,13 @@
 </template>
 <script type="text/javascript">
 	import { Group, Cell, CellBox } from 'vux';
+	import { mapState } from 'vuex';
 	export default {
+		computed: {
+	        ...mapState({
+	            common_request_base_url: state => state.common.common_request_base_url 
+	        })
+    	},
 		components: {
 			Group,
 			Cell,

@@ -51,6 +51,7 @@
 import Header from '@/components/header/header';
 import Footer from '@/components/tabbar/tabbar';
 import Mine from '@/components/mine/mine';
+import { mapState } from 'vuex';
 	export default {
 		data () {
 			return {
@@ -72,6 +73,11 @@ import Mine from '@/components/mine/mine';
 			vFooter: Footer,
 			Mine
 		},
+		computed: {
+	        ...mapState({
+	            common_request_base_url: state => state.common.common_request_base_url 
+	        })
+    	},
 		mounted() {
 			if (!window.localStorage.tabSelect) {
 				window.localStorage.tabSelect = this.tabbarSelect.info;
@@ -82,7 +88,7 @@ import Mine from '@/components/mine/mine';
 			// this.scroller = this.$el;
 			// 获取banner
 			let id = localStorage.getItem('dataid');
-			let url = 'api/web/v1/app/findallbanner?id=' + id;
+			let url = this.common_request_base_url + 'api/web/v1/app/findallbanner?id=' + id;
 				this.$http.get(url)
 				.then((res) => {
 					var imgURL = res.data.content.result;
@@ -111,7 +117,7 @@ import Mine from '@/components/mine/mine';
 			getList() {
 				// 获取课程列表
 				let id = localStorage.getItem('dataid');
-				let url = 'api/web/v1/app/findallcourse' + '?id=' + id + '&page=' + '1' + '&size=' + '5';
+				let url = this.common_request_base_url + 'api/web/v1/app/findallcourse' + '?id=' + id + '&page=' + '1' + '&size=' + '5';
 				// alert(url);
 				this.$http.get(url)
 				.then((res) => {
@@ -132,7 +138,7 @@ import Mine from '@/components/mine/mine';
 		beforeRouteEnter (to, from, next) {
 			next(vm => {
 				let id = localStorage.getItem('dataid');
-				let url = 'api/web/v1/app/findallcourse' + '?id=' + id + '&page=' + '1' + '&size=' + '5';
+				let url = vm.common_request_base_url + 'api/web/v1/app/findallcourse' + '?id=' + id + '&page=' + '1' + '&size=' + '5';
 				// alert(url);
 				vm.$http.get(url)
 				.then((res) => {

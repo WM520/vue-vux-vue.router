@@ -31,7 +31,13 @@
 <script type="text/javascript">
 import split from '@/components/split/split';
 import BlankPage from '@/components/blankpages/blankpages';
+import { mapState } from 'vuex';
 	export default {
+		computed: {
+	        ...mapState({
+	            common_request_base_url: state => state.common.common_request_base_url 
+	        })
+    	},
 		data() {
 			return {
 				courseArray: []
@@ -56,7 +62,7 @@ import BlankPage from '@/components/blankpages/blankpages';
 			next(vm => {
 				let userID = vm.$store.state.UserInfo.useID;
 				let id = localStorage.getItem('dataid');
-				let url = vm.$store.state.UserInfo.appendURL + 'findcoursebyuserid?id=' + id + '&userId=' + userID;
+				let url = vm.common_request_base_url + vm.$store.state.UserInfo.appendURL + 'findcoursebyuserid?id=' + id + '&userId=' + userID;
 				console.log(url);
 				vm.$http.get(url)
 				.then((res) => {

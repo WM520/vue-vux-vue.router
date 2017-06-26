@@ -1,6 +1,6 @@
 <template>
 	<div class="swipeheader">
-		<swiper loop auto :list="imgURL" :index="imgindex" @on-index-change="onIndexChange" height="175px"></swiper>
+		<swiper loop auto :list="imgURL" :index="imgindex" @on-index-change="onIndexChange" height="180px"></swiper>
 	</div>
 </template>
 <script type="text/javascript">
@@ -19,7 +19,7 @@ export default {
 	data () {
 		return {
 			bannerList: baseList,
-			imgindex: 0
+			imgindex: 0 
 		};
 	},
 	methods: {

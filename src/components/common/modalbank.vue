@@ -11,7 +11,7 @@
 				<span class="carttitle">赠送数量</span>
 				<span class="cartcontrol"> {{ count }}</span>
 				<span class="total">合计</span>
-				<span class="price">{{ totalPrice }}</span>
+				<span class="price">{{ totalPrice * count }}</span>
 				<div class="modalcommit" @click="commitAction">
 					<span class="commitspan">打包赠送</span>
 				</div>
@@ -143,7 +143,7 @@ import cartcontrol from '@/components/cartcontrol/cartcontrol';
 					position: absolute
 					font-size: 16px
 					top: 75%
-					right: 15%
+					right: 20%
 					color: #ef5350
 				.modalcommit
 					position: absolute

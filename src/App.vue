@@ -9,6 +9,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 	export default {
 		name: 'app',
 		mounted() {
@@ -16,7 +17,7 @@
 				var key = '';
 				localStorage.setItem('dataid', key);
 			};
-			let url = 'api/web/v1/app/logintest' + '?id=' + localStorage.getItem('dataid');
+			let url = this.common_request_base_url + 'api/web/v1/app/logintest' + '?id=' + localStorage.getItem('dataid');
 			this.$http.get(url)
 			.then((res) => {
 				// 微信网页授权验证
@@ -39,7 +40,7 @@
 					let time = this.getLocalTime(res.data.userCreateTime * 1000);
 					this.$store.commit('updateUserInfoUserCreateTime', time);
 					// 转换头像图片
-					let url = 'api/web/v1/app/getossmedia' + '?media=' + res.data.userHeadImage;
+					let url = this.common_request_base_url +'api/web/v1/app/getossmedia' + '?media=' + res.data.userHeadImage;
 					this.$http.get(url)
 					.then((res) => {
 						this.$store.commit('updateUserInfoHeadImgURL', res.data);
@@ -68,7 +69,12 @@
 				var second = time.getSeconds();
 				return year + '-' + month + '-' + date + '   ' + hour + ':' + minute + ':' + second;
 			}
-		}
+		},
+		computed: {
+	        ...mapState({
+	            common_request_base_url: state => state.common.common_request_base_url 
+	        })
+    	}
 	};
 </script>
 

@@ -47,8 +47,14 @@
 
 <script type="javascript">
 import split from '@/components/split/split';
-import Footer from '@/components/livedetailfooter/livedetailfooter'
+import Footer from '@/components/livedetailfooter/livedetailfooter';
+import { mapState } from 'vuex';
  export default {
+ 	computed: {
+	    ...mapState({
+	        common_request_base_url: state => state.common.common_request_base_url 
+	    })
+    },
  	components: {
  		split,
  		vFooter: Footer
@@ -86,7 +92,7 @@ import Footer from '@/components/livedetailfooter/livedetailfooter'
  				} else if (val.roomType === 0) {
  					let id = localStorage.getItem('dataid');
 		            let userID = this.$store.state.UserInfo.useID;
-		            let url = '/api/web/v1/app/findinfobyroomidanduserid?id=' + id + '&userId=' + userID + '&roomId=' + val.roomId;
+		            let url = this.common_request_base_url + 'api/web/v1/app/findinfobyroomidanduserid?id=' + id + '&userId=' + userID + '&roomId=' + val.roomId;
 		       	    this.$http.get(url)
 		            .then((res) => {
 		                this.liveRoom = res.data.content.result;
@@ -106,7 +112,7 @@ import Footer from '@/components/livedetailfooter/livedetailfooter'
 	 					let id = localStorage.getItem('dataid');
 		                let userID = this.$store.state.UserInfo.useID;
 		                console.log(this.$store.state.UserInfo.useID);
-		                let url = '/api/web/v1/app/findinfobyroomidanduserid?id=' + id + '&userId=' + userID + '&roomId=' + val.roomId;
+		                let url = this.common_request_base_url + 'api/web/v1/app/findinfobyroomidanduserid?id=' + id + '&userId=' + userID + '&roomId=' + val.roomId;
 		                console.log(url);
 		                this.$http.get(url)
 		                .then((res) => {
@@ -132,7 +138,7 @@ import Footer from '@/components/livedetailfooter/livedetailfooter'
 	 			vm.courseId = courseId;
 	 		};
 	 		console.log(vm.courseId);
-	 		let url = '/api/web/v1/app/findcoursebyid?id=' + id + '&courseId=' + vm.courseId + '&userId=' + userID;
+	 		let url = vm.common_request_base_url + 'api/web/v1/app/findcoursebyid?id=' + id + '&courseId=' + vm.courseId + '&userId=' + userID;
 	 		alert(url);
 	 		console.log(url);
 			vm.$http.get(url)

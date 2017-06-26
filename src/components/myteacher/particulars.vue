@@ -28,7 +28,13 @@
 </template>
 <script type="text/javascript">
 import split from '@/components/split/split';
+import { mapState } from 'vuex';
 	export default {
+		computed: {
+	        ...mapState({
+	            common_request_base_url: state => state.common.common_request_base_url 
+	        })
+    	},
 		components: {
 			split
 		},
@@ -36,7 +42,7 @@ import split from '@/components/split/split';
 			next(vm => {
 				let id = localStorage.getItem('dataid');
 				let lecturerId = vm.$store.state.UserInfo.lecturerId;
-				let url = 'api/web/v1/app/findincomeandcoursebyid?id=' + id + '&lecturerId=' + lecturerId;
+				let url = vm.common_request_base_url + 'api/web/v1/app/findincomeandcoursebyid?id=' + id + '&lecturerId=' + lecturerId;
 				vm.$http.get(url)
 				.then((res) => {
 					console.log(res);

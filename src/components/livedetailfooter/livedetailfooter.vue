@@ -25,7 +25,7 @@
 			<modal-bank v-show="priceshow" @commitPrice="commitActionPrice" @hidePrice="hidePrice" :totalPrice="pingkeObject.totalPrice" :count="pingkeObject.count"></modal-bank>
 		</transition>
 		<transition name="fade">
-			<normal-modal v-show="normalpriceshow" @commitPrice="commitNormalActionPrice" @hidePrice="hideNormalPrice" :totalPrice="pingkeObject.totalPrice" :count="pingkeObject.count"></normal-modal>
+			<normal-modal v-show="normalpriceshow" @commitPrice="commitNormalActionPrice" @hidePrice="hideNormalPrice" :totalPrice="modalInfo.coursePrice" :count="1"></normal-modal>
 		</transition>
 	</div>
 </template>
@@ -34,7 +34,13 @@ import modal from '@/components/common/modal';
 import modalBank from '@/components/common/modalbank';
 import normalModal from '@/components/common/normalmodal';
 import wx from 'weixin-js-sdk';
+import { mapState } from 'vuex';
 export default {
+	computed: {
+	    ...mapState({
+	        common_request_base_url: state => state.common.common_request_base_url 
+	    })
+    },
 	data () {
 		return {
 			modalshow: false,
@@ -78,14 +84,14 @@ export default {
 				ubrCourseType: '1',
 				ubrPayType: '0'
 			};
-			let url = 'api/web/v1/app/createorder';
+			let url = this.common_request_base_url + 'api/web/v1/app/createorder';
 			alert(url);
 			this.$http.post(url, params)
 			.then((res) => {
 				alert(res.data.content.result.orderNum);
 				console.log(res.data.content.result.orderNum);
 				this.orderID = res.data.content.result.orderId;
-				let payurl = 'api/web/wx/wxpay?id=' + localStorage.getItem('dataid') + '&orderNumber=' + res.data.content.result.orderNum + '&total_fee=' + '1' + '&openid=' + this.$store.state.UserInfo.openID;
+				let payurl = this.common_request_base_url + 'api/web/wx/wxpay?id=' + localStorage.getItem('dataid') + '&orderNumber=' + res.data.content.result.orderNum + '&total_fee=' + '1' + '&openid=' + this.$store.state.UserInfo.openID;
 				this.$http.get(payurl)
 				.then((res) => {
 					console.log(res);
@@ -139,13 +145,13 @@ export default {
 				ubrPayType: '0'
 			};
 			this.payType = '1';
-			let url = 'api/web/v1/app/createorder';
+			let url = this.common_request_base_url + 'api/web/v1/app/createorder';
 			alert(url);
 			this.$http.post(url, params)
 			.then((res) => {
 				alert(res.data.content.result.orderNum);
 				this.orderID = res.data.content.result.orderId;
-				let payurl = 'api/web/wx/wxpay?id=' + localStorage.getItem('dataid') + '&orderNumber=' + res.data.content.result.orderNum + '&total_fee=' + '1' + '&openid=' + this.$store.state.UserInfo.openID;
+				let payurl = this.common_request_base_url + 'api/web/wx/wxpay?id=' + localStorage.getItem('dataid') + '&orderNumber=' + res.data.content.result.orderNum + '&total_fee=' + '1' + '&openid=' + this.$store.state.UserInfo.openID;
 				this.pingkeObject.count = '1';
 				this.pingkeObject.totalPrice = res.data.content.result.coursePrice;
 				this.$http.get(payurl)
@@ -179,7 +185,7 @@ export default {
 				ubrPayMoney: '0.01',
 				orderId: this.orderID
 			};
-			let url = 'api/web/v1/app/updateorder';
+			let url = this.common_request_base_url + 'api/web/v1/app/updateorder';
 			this.$http.post(url, params)
 			.then((res) => {
 				alert(res.data.content.result);
@@ -278,10 +284,9 @@ export default {
 				background-color: #ef5350;
 				.buyicon
 					position: absolute
-					width: 50px
-					height: 60px
+					width: 70px
 					padding-left: 5%
-					padding-top: -20px
+					padding-top: -10px
 				.count
 					position: absolute
 					color: #ffffff

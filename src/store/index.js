@@ -6,6 +6,8 @@ import footer from './modules/footer';
 import room from './modules/room';
 import chat from './modules/chat';
 import audio from './modules/audio';
+import common from './modules/common';
+
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -15,6 +17,7 @@ export default new Vuex.Store({
 		chat,
 		room,
 		footer,
-		audio
+		audio,
+		common
 	}
 });

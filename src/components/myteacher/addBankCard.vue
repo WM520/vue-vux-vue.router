@@ -18,7 +18,13 @@
 </template>
 <script type="text/javascript">
 	import { Group, Cell, XInput, PopupPicker } from 'vux';
+	import { mapState } from 'vuex';
 	export default {
+		computed: {
+	        ...mapState({
+	            common_request_base_url: state => state.common.common_request_base_url 
+	        })
+    	},
 		data() {
 			return {
 				title: '请绑定本人的银行卡，目前仅支持绑定一张卡',
@@ -65,7 +71,7 @@
 					bankName: this.cardMessage.bankName,
 					subBankName: this.cardMessage.subBankName
 				};
-				let url = 'api/web/v1/app/savebankcard';
+				let url = this.common_request_base_url + 'api/web/v1/app/savebankcard';
 				this.$http.post(url, params)
 				.then((res) => {
 					alert(res.data.content.result);

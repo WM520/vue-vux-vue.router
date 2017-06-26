@@ -30,14 +30,14 @@ export default {
         user_joined_callback:function(msg){
             console.log(msg);
         },
-        InitRoom:function(){  
+        InitRoom:function(){
             //console.log(this.$route.params.liveroom);
             let roomName = this.$route.params.liveroom.cr_room_name;
             let roomID = this.$route.params.liveroom.roomId;
             let userName = this.$route.params.liveroom.user_nickname;
             let userID = this.$route.params.liveroom.user_id;
             let userType = this.$route.params.liveroom.userType;
-            document.title = roomName;
+            // document.title = roomName;   
             let user = {};
             user.session_id = localStorage.getItem('dataid');
             user.user_id = userID;

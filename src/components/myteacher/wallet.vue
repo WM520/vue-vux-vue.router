@@ -28,7 +28,13 @@
 import { Cell, Group, Scroller } from 'vux';
 import WalletCell from '@/components/myteacher/walletCell';
 import modalbank from '@/components/common/addBankModal';
+import { mapState } from 'vuex';
 	export default {
+		computed: {
+	        ...mapState({
+	            common_request_base_url: state => state.common.common_request_base_url 
+	        })
+    	},
 		data() {
 			return {
 				money: 900,
@@ -62,10 +68,29 @@ import modalbank from '@/components/common/addBankModal';
 					withdrawCardId: '',
 					withdrawMoney: val
 				}
-				let url = 'api/web/v1/app/savewithdraw';
+				let url = this.common_request_base_url + 'api/web/v1/app/savewithdraw';
 				this.$http.post(url, params)
 				.then((res) => {
 					console.log(res);
+					// 提现成功刷新页面
+					if (res.data.content.result !== null) {
+						let url = this.common_request_base_url + 'api/web/v1/app/findincomebyid?id=' + localStorage.getItem('dataid') + '&lecturerId=' + vm.$store.state.UserInfo.lecturerId;
+						console.log(url)
+						vm.$http.get(url)
+						.then((res) => {
+							console.log(res);
+							vm.walletModel = res.data.content.result;
+							if (vm.walletModel.sumIncome === null) {
+								vm.walletModel.sumIncome = 0;
+							};
+							if (vm.walletModel.incomeMoney === null) {
+								vm.walletModel.incomeMoney = 0;
+							};
+							if (vm.walletModel.withdrowMoney === null) {
+								vm.walletModel.withdrowMoney = 0;
+							};
+						});
+					};
 				});
 				console.log('提交提现', val);
 			},
@@ -77,7 +102,7 @@ import modalbank from '@/components/common/addBankModal';
 				console.log(111111111111111);
 				let id = localStorage.getItem('dataid');
 				let lecturerId = this.$store.state.UserInfo.lecturerId;
-				let url = 'api/web/v1/app/findbankcardbylecturerid?id=' + id + '&&lecturerId=' + lecturerId;
+				let url = this.common_request_base_url + 'api/web/v1/app/findbankcardbylecturerid?id=' + id + '&&lecturerId=' + lecturerId;
 				this.$http.get(url)
 				.then((res) => {
 					if (res.data.content.result === null) {
@@ -94,7 +119,7 @@ import modalbank from '@/components/common/addBankModal';
 		},
 		beforeRouteEnter (to, from, next) {
 			next(vm => {
-				let url = 'api/web/v1/app/findincomebyid?id=' + localStorage.getItem('dataid') + '&lecturerId=' + vm.$store.state.UserInfo.lecturerId;
+				let url = vm.common_request_base_url + 'api/web/v1/app/findincomebyid?id=' + localStorage.getItem('dataid') + '&lecturerId=' + vm.$store.state.UserInfo.lecturerId;
 				console.log(url)
 				vm.$http.get(url)
 				.then((res) => {

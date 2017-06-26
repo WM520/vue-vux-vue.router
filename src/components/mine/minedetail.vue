@@ -3,7 +3,7 @@
 		<!-- <group> -->
 			<div class="top-wrapper">
 				<div class="icon">
-					<img src="../../assets/withdrawal@2x.png" style="display:block; width:60px; -webkit-border-radius: 50px; height: 60px">
+					<img :src="this.$store.state.UserInfo.headimgurl" style="display:block; width:60px; -webkit-border-radius: 50px; height: 60px">
 				</div>
 				<div class="content">
 					<span class="title">{{ name }}</span><br><br>
@@ -21,7 +21,13 @@
 </template>
 <script type="text/javascript">
 	import { Group, Cell, CellBox } from 'vux';
+	import { mapState } from 'vuex';
 	export default {
+		computed: {
+	        ...mapState({
+	            common_request_base_url: state => state.common.common_request_base_url 
+	        })
+    	},
 		data() {
 			return {
 				name: this.$store.state.UserInfo.userName,

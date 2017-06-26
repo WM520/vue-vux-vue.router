@@ -51,7 +51,13 @@
 <script type="text/javascript">
 import { Tab, TabItem } from 'vux';
 import BlankPage from '@/components/blankpages/blankpages';
+import { mapState } from 'vuex';
 	export default {
+		computed: {
+	        ...mapState({
+	            common_request_base_url: state => state.common.common_request_base_url 
+	        })
+    	},
 		data() {
 			return {
 				// loading: false,
@@ -108,7 +114,7 @@ import BlankPage from '@/components/blankpages/blankpages';
 				// 获取订单详情
 				let userID = vm.$store.state.UserInfo.useID;
 				let id = localStorage.getItem('dataid');
-				let url = vm.$store.state.UserInfo.appendURL + 'findorderbyuserid?id=' + id + '&userId=' + userID;
+				let url = vm.common_request_base_url + vm.$store.state.UserInfo.appendURL + 'findorderbyuserid?id=' + id + '&userId=' + userID;
 				// alert(url);
 				vm.$http.get(url)
 				.then((res) => {

@@ -15,12 +15,18 @@
 	</div>
 </template>
 <script type="text/javascript">
+import { mapState } from 'vuex';
 	export default {
+		computed: {
+	        ...mapState({
+	            common_request_base_url: state => state.common.common_request_base_url 
+	        })
+    	},
 		mounted() {
 			let id = localStorage.getItem('dataid');
 			alert(this.$route.params);
 			console.log(this.$route.params);
-			let url = '/api/web/v1/app/findlecturerbyid?id=' + id + '&lecturerId=' + this.$route.params.teacherID;
+			let url = this.common_request_base_url + 'api/web/v1/app/findlecturerbyid?id=' + id + '&lecturerId=' + this.$route.params.teacherID;
 			alert(url);
 			this.$http.get(url)
 			.then((res) => {

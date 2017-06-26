@@ -9,6 +9,7 @@
 	</div>
 </template>
 <script type="text/javascript">
+import { mapState } from 'vuex'
 import { XTextarea, Group } from 'vux';
 	export default {
 		data() {
@@ -17,6 +18,11 @@ import { XTextarea, Group } from 'vux';
 				textValue: ''
 			};
 		},
+		computed: {
+	        ...mapState({
+	            common_request_base_url: state => state.common.common_request_base_url 
+	        })
+    	},
 		components: {
 			XTextarea,
 			Group
@@ -31,7 +37,7 @@ import { XTextarea, Group } from 'vux';
 					feedbackUserId: this.$store.state.UserInfo.useID,
 					feedbackContent: this.textValue
 				};
-				let url = 'api/web/v1/app/savefeedback';
+				let url = this.common_request_base_url+'api/web/v1/app/savefeedback';
 				this.$http.post(url, params)
 				.then((res) => {
 					alert('反馈成功');

@@ -21,7 +21,13 @@
 <script type="text/javascript">
 import {formatDate} from '../../utils/datetime.js';
 import { Swipeout, SwipeoutItem, SwipeoutButton } from 'vux';
+import { mapState } from 'vuex';
 	export default {
+		computed: {
+	        ...mapState({
+	            common_request_base_url: state => state.common.common_request_base_url 
+	        })
+    	},
 		data() {
 			return {
 				cardMessage: {}

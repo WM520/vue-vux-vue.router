@@ -96,7 +96,13 @@
 	</div>
 </template>
 <script type="text/javascript">
+import { mapState } from 'vuex';
 	export default {
+		computed: {
+	        ...mapState({
+	            common_request_base_url: state => state.common.common_request_base_url 
+	        })
+    	},
 		data() {
 			return {
 				liveList: [{}, {}],
@@ -109,7 +115,7 @@
 				// 获取课程详情
 				// alert(to.params.orderid);
 				let id = localStorage.getItem('dataid');
-				let url = '/api/web/v1/app/findinfobyorderid?id=' + id + '&orderId=' + to.params.orderid;
+				let url = vm.common_request_base_url + 'api/web/v1/app/findinfobyorderid?id=' + id + '&orderId=' + to.params.orderid;
 				// alert(url);
 				vm.$http.get(url)
 				.then((res) => {
