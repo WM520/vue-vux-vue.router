@@ -2,21 +2,19 @@
 	<div class="myteacher-wrap">
 		<!-- 顶部 -->
 		<div class="myteacher-teacher-top">
-			<span>{{ teacherInfo.lecturerWxName }}</span>
+			<span>{{ teacherInfo.lecturerName }}</span>
 			<!-- 头像部分 -->
 			<div class="myteacher-teacher-portrait">
-				<img src="../../assets/LF.jpg">
+				<img :src="head_image_url">
 			</div>
-			<!-- 讲师名 -->
-			
+			<!-- 讲师名 -->	
 		</div>
 
 		<!-- 提现和直播内容部分 -->
-
 		<ul class="myteacher-withdrawals-box">
-			<li><router-link to="MyWallet"><img src="../../assets/wallet.png"><span class="myteacher-withdrawals-number">{{ teacherInfo.lecturerMoney }}<span class="myteacher-withdrawals-individual">&nbsp;元</span></span></router-link></li>
+			<li @click="goToMyWallet"><img src="../../assets/wallet.png"><span class="myteacher-withdrawals-number">{{ teacherInfo.sumIncome }}<span class="myteacher-withdrawals-individual">&nbsp;元</span></span></li>
 			
-			<li><router-link to="MyCourse"><img src="../../assets/directSeeding.png"><span class="myteacher-withdrawals-number">{{ teacherInfo.lecturerStatus }}<span class="myteacher-withdrawals-individual">&nbsp;条</span></span></router-link></li>
+			<li><router-link :to="{name: 'TeacherCourse'}"><img src="../../assets/directSeeding.png"><span class="myteacher-withdrawals-number">{{ teacherInfo.courseCount }}<span class="myteacher-withdrawals-individual">&nbsp;条</span></span></router-link></li>
 		</ul>
 
 		<!-- 隔断块 -->
@@ -32,7 +30,7 @@
 		<div class="myteacher-AboutInstructor-text-box">
 			<div class="myteacher-field">擅长领域 : <span>公共关系学</span></div>
 			<div class="myteacher-Characteristic">特点/背景 : <span>{{ teacherInfo.lecturerIntroduction }}</span></div>
-			<img src="../../assets/LF.jpg" height="576" width="1024" alt="">
+			<img src="../../assets/teacherImg.png" height="576" width="1024" alt="">
 		</div>
 	</div>
 </template>
@@ -43,24 +41,37 @@ import { mapState } from 'vuex';
 	export default {
 		computed: {
 	        ...mapState({
-	            common_request_base_url: state => state.common.common_request_base_url 
+	            common_request_base_url: state => state.common.common_request_base_url,
+	            userinfo_data : state => state.UserInfo.userinfo_data,
+	            common_request_appendv1_url: state => state.common.common_request_appendv1_url
 	        })
     	},
 		beforeRouteEnter (to, from, next) {
 			console.log(to.params);
 			if (to.params.isTeacher || to.params.isTeacher === undefined) {
 				next(vm => {
+					vm.loading = true;
+					vm.$indicator.open('加载中...');
 					let id = localStorage.getItem('dataid');
-					let lecturerId = vm.$store.state.UserInfo.lecturerId;
-					let url = vm.common_request_base_url + 'api/web/v1/app/findlecturerbyid?id=' + id + '&lecturerId=' + lecturerId;
+					let openid = localStorage.getItem('openid');
+					let lecturerId = vm.userinfo_data.lecturerId;
+					let url = vm.common_request_base_url + vm.common_request_appendv1_url +'findincomeandcoursebyid?id=' + id + '&lecturerId=' + lecturerId + '&openid=' + openid;
 					vm.$http.get(url)
 					.then((res) => {
 						console.log(res);
+						vm.loading = false;
 						vm.teacherInfo = res.data.content.result;
+						if (vm.teacherInfo.sumIncome === null) {
+							vm.teacherInfo.sumIncome = 0;
+						};
+					})
+					.catch((error) =>{
+						vm.loading = false;
+						vm.$toast('获取讲师个人信息失败');
 					});
 				});
 			} else {
-				alert('您还不是讲师');
+				this.$toast('您还不是讲师');
 			};
 		},
 		components: {
@@ -68,8 +79,41 @@ import { mapState } from 'vuex';
 		},
 		data() {
 			return {
-				teacherInfo: {}
+				teacherInfo: {},
+				loading: true,
+				head_image_url: ''
 			};
+		},
+		watch: {
+			loading() {
+				if (this.loading === false) {
+					this.$indicator.close();
+					this.getHeadImage();
+				};
+			}
+		},
+		methods: {
+			getHeadImage() {
+				let url = this.common_request_base_url + this.common_request_appendv1_url + 'getossmedia?media=' + this.teacherInfo.headImage;
+				this.$http.get(url)
+				.then((res) => {
+					this.head_image_url = res.data;
+				})
+				.catch((error) => {
+					this.$toast('获取讲师头像错误');
+				});
+			},
+			getIntroductionImage() {
+
+			},
+			goToMyWallet() {
+				if ((this.teacherInfo.sumIncome !== null || this.teacherInfo.sumIncome !== undefined) && this.teacherInfo.sumIncome > 0)  {
+					this.$router.push({ name: 'MyWallet'});
+				} else {
+					this.$router.push({ name: 'MyWallet'});
+					// this.$toast('您还没有收入');
+				};
+			}
 		}
 	};
 </script>

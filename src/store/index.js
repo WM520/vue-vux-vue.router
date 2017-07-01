@@ -7,6 +7,7 @@ import room from './modules/room';
 import chat from './modules/chat';
 import audio from './modules/audio';
 import common from './modules/common';
+import header from './modules/header';
 
 Vue.use(Vuex);
 
@@ -18,6 +19,7 @@ export default new Vuex.Store({
 		room,
 		footer,
 		audio,
-		common
+		common,
+		header
 	}
 });

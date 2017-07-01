@@ -71,9 +71,13 @@
 					bankName: this.cardMessage.bankName,
 					subBankName: this.cardMessage.subBankName
 				};
-				let url = this.common_request_base_url + 'api/web/v1/app/savebankcard';
-				this.$http.post(url, params)
-				.then((res) => {
+				let url = this.common_request_base_url + 'v1/app/savebankcard';
+				var qs = require('qs');
+				this.$http.post(url, qs.stringify(params),{
+				 	headers: {
+    					'Content-Type': 'application/x-www-form-urlencoded',
+  					}
+				}).then((res) => {
 					alert(res.data.content.result);
 					if (res.data.content.is_success === true) {
 						this.$router.push({ name: 'BankCard'});

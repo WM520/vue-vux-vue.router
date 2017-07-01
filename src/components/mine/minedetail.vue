@@ -3,18 +3,18 @@
 		<!-- <group> -->
 			<div class="top-wrapper">
 				<div class="icon">
-					<img :src="this.$store.state.UserInfo.headimgurl" style="display:block; width:60px; -webkit-border-radius: 50px; height: 60px">
+					<img :src="user_header_image" style="display:block; width:60px; -webkit-border-radius: 50px; height: 60px">
 				</div>
 				<div class="content">
-					<span class="title">{{ name }}</span><br><br>
-					<span class="joinTime">加入时间: {{ joinTime }}</span>
+					<span class="title">{{ userinfo_data.userNickname }}</span><br><br>
+					<span class="joinTime">加入时间: {{ userinfo_data.userCreateTime * 1000 | formatDate }}</span>
 				</div>
 			</div>
 		<!-- </group> -->
 		<group>
-			<cell title="性别" :value="sex">
+			<cell title="性别" :value="userinfo_data.userSex === 1 ? '男' : '女'">
 			</cell>
-			<cell title="地区" :value="address">
+			<cell title="地区" :value="userinfo_data.userProvince + userinfo_data.userCity">
 			</cell>
 		</group>
 	</div>
@@ -22,18 +22,17 @@
 <script type="text/javascript">
 	import { Group, Cell, CellBox } from 'vux';
 	import { mapState } from 'vuex';
+	import {formatDate} from '../../utils/datetime.js';
 	export default {
 		computed: {
 	        ...mapState({
-	            common_request_base_url: state => state.common.common_request_base_url 
+	            common_request_base_url: state => state.common.common_request_base_url,
+	            userinfo_data : state => state.UserInfo.userinfo_data,
+            	user_header_image : state => state.UserInfo.user_header_image
 	        })
     	},
 		data() {
 			return {
-				name: this.$store.state.UserInfo.userName,
-				sex: '男',
-				address: this.$store.state.UserInfo.userProvince + this.$store.state.UserInfo.userCity,
-				joinTime:  this.$store.state.UserInfo.userCreateTime
 			};
 		},
 		components: {
@@ -41,30 +40,12 @@
 			Cell,
 			CellBox
 		},
-		methods: {
-			getLocalTime(now) {
-				var time = new Date(now);
-				alert(time);
-				var year = time.getFullYear();
-				// alert(year);
-				var month = time.getMonth() + 1;
-				var date = time.getDate();
-				var hour = time.getHours();
-				var minute = time.getMinutes();
-				if (minute === '0') {
-					minute = '00';
-				};
-				var second = time.getSeconds();
-				return year + '-' + month + '-' + date + '   ' + hour + ':' + minute + ':' + second;
-			}
-		},
-		mounted() {
-			if (this.$store.state.UserInfo.userSex === 1) {
-				this.sex = '男';
-			} else if (this.$store.state.UserInfo.userSex === 0) {
-				this.sex = '女';
-			};
-		}
+		filters: {
+	        formatDate(time) {
+	            var date = new Date(time);
+	            return formatDate(date, 'yyyy-MM-dd hh:mm');
+	        }
+    	}
 	};
 </script>
 <style lang="stylus" scroped>

@@ -2,7 +2,7 @@
 	<div class="homeContent" ref="home">
 		<div v-if="tabbarSelect.info === '首页'">
 			<!-- 轮播 -->
-			<v-header :imgURL="imgURL"></v-header>
+			<v-header></v-header>
 			<div class="liveContent">
 				<div class="recent-wrapper">
 					<div class="recent-header">
@@ -16,9 +16,7 @@
 						<router-link :to="{name:'LiveDetail', params: { id:item.courseId }}">
 							<div id="recentcontent">
 								<div id="topImgDiv">
-									<img src="../../assets/grain.jpg" alt="" class="imgGrain">
-									<div class="begin"></div>
-									<span class="beginText">即将开始</span>
+									<img :src="item.courseLogo_url" class="imgGrain">
 									<div class="introduceText">
 										{{ item.courseName }}
 									</div>
@@ -43,8 +41,8 @@
 		<div v-else>
 			<mine></mine>
 		</div>
-		<!-- <v-footer :tabSelect="tabbarSelect" @choosemine="choosemine" @choosehome="choosehome"></v-footer> -->
-		<v-footer :tabSelect="tabbarSelect"></v-footer>
+		<v-footer :tabSelect="tabbarSelect" @choosemine="choosemine" @choosehome="choosehome"></v-footer>
+		<!--<v-footer :tabSelect="tabbarSelect"></v-footer>-->
 	</div>
 </template>
 <script type="text/javascript">
@@ -55,6 +53,9 @@ import { mapState } from 'vuex';
 	export default {
 		data () {
 			return {
+				homeBannerDataLoading:true,
+				homeBannerLoading:true,
+				homeListLoading:true,
 				homeArray: [],
 				currentSelect: '单直播间',
 				tabbarSelect: {
@@ -65,7 +66,8 @@ import { mapState } from 'vuex';
 				// scroller: null,
 				loading: false,
 				refreshing: false,
-				imgURL: []
+				imgUrlBanner:[],
+				homeTempArray:[]
 			};
 		},
 		components: {
@@ -75,79 +77,228 @@ import { mapState } from 'vuex';
 		},
 		computed: {
 	        ...mapState({
-	            common_request_base_url: state => state.common.common_request_base_url 
+	            common_request_base_url: state => state.common.common_request_base_url,
+	            swiper_img_list : state => state.header.swiper_img_list,
+	            common_request_appendv1_url: state => state.common.common_request_appendv1_url
 	        })
     	},
 		mounted() {
-			if (!window.localStorage.tabSelect) {
-				window.localStorage.tabSelect = this.tabbarSelect.info;
-				console.log(window.localStorage.tabSelect);
-			} else {
-				this.tabbarSelect.info = window.localStorage.tabSelect;
-			};
-			// this.scroller = this.$el;
-			// 获取banner
-			let id = localStorage.getItem('dataid');
-			let url = this.common_request_base_url + 'api/web/v1/app/findallbanner?id=' + id;
-				this.$http.get(url)
-				.then((res) => {
-					var imgURL = res.data.content.result;
-					if (imgURL === null) { return; };
-					for (var i = 0; i < imgURL.length; i++) {
-						var imgObject = {};
-						imgObject.img = 'http://192.168.0.126:38080' + imgURL[i].mbUrl;
-						imgObject.title = imgURL[i].mbImage;
-						imgObject.url = 'http://qingzz.com/';
-						this.imgURL.push(imgObject);
-					}
-				}, (err) => {
-					console.log(err);
-				});
-				this.getList();
+			this.initLogin();
+			this.tabbarSelect.info = '首页';
 		},
 		methods: {
-			// 上拉加载更多
-			loadMore() {
-				let vue = this;
-				this.loading = true;
-				setTimeout(() => {
-					vue.getList();
-				}, 500);
+			initUserInfo() {
+				
 			},
-			getList() {
-				// 获取课程列表
+			initLogin(){
+				if(localStorage.getItem('user_logined') === null || localStorage.getItem('user_logined') === undefined || localStorage.getItem('user_logined') === false ){
+					if (localStorage.getItem('dataid') === null || localStorage.getItem('dataid') === undefined)
+					{
+						let key = '';
+						localStorage.setItem('dataid', key);
+					};
+					if (localStorage.getItem('openid') === null || localStorage.getItem('openid') === undefined)
+					{
+						let key = '';
+						localStorage.setItem('openid', key);
+					};
+					let url = this.common_request_base_url + this.common_request_appendv1_url +'logintest?id=' + localStorage.getItem('dataid') + '&openid=' + localStorage.getItem('openid');
+					console.log(url);
+					this.$http.get(url)
+						.then((res) => {
+							// 微信网页授权验证
+							console.log(res);
+							if (res.data.userWxOpenid === undefined || res.data.userWxOpenid === '') {
+								localStorage.setItem('dataid', res.data.id);
+								console.log(res);
+								let r_url = this.common_request_base_url + this.common_request_appendv1_url + 'login?id=' + res.data.id;
+								window.location.href = r_url;
+							}else{
+								this.$store.dispatch("initUserInfo", res.data);
+
+								localStorage.setItem('openid', res.data.userWxOpenid);
+								console.log(res.data);
+								this.initHome();
+							}
+						})
+	  					.catch((error) => {
+	    					this.$toast("获取session_id异常");
+	    					console.log(error);
+	  					});
+				}else{
+					this.$store.dispatch("getLocalUserInfo");
+					this.initHome();
+				}
+			},
+			
+			initHome(){
+
+				
+				let u = navigator.userAgent;
+
+				//if(u.indexOf('Android') > -1 || u.indexOf('Adr') > -1){
+				if(!!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/)){
+					//currentUrl = currentUrl + 'livedetail/liveroom/'
+					let currentUrl = location.href;
+
+					console.log("currenturl:="+currentUrl);
+					this.$store.dispatch("getWeChatSignature",currentUrl);
+				}
+				if(this.homeBannerDataLoading || this.homeListLoading){
+					this.$indicator.open('加载中...'); 
+					if(this.homeBannerDataLoading){
+						this.initBanner();
+					}
+					if(this.homeListLoading){
+						this.initHomeCourseList();
+					}
+				}
+
+			},
+			initBanner(){
 				let id = localStorage.getItem('dataid');
-				let url = this.common_request_base_url + 'api/web/v1/app/findallcourse' + '?id=' + id + '&page=' + '1' + '&size=' + '5';
-				// alert(url);
+				let openid = localStorage.getItem('openid');
+				let bannerurl = this.common_request_base_url + this.common_request_appendv1_url + 'findallbanner?id=' + id + '&openid=' + openid;
+				this.$http.get(bannerurl)
+					.then((response) => {
+    					console.log(response);
+    					let banner_list = response.data.content.result;
+    					if(banner_list.length <= 0){
+    						this.$toast("获取banner信息为空");
+    					}else{
+    						this.imgUrlBanner = [];
+	    					console.log(banner_list);
+	    					this.imgUrlBanner = banner_list;
+	    					console.log(this.imgUrlBanner);
+	    					this.homeBannerDataLoading = false;
+    					}
+  					})
+  					.catch((error) => {
+  						this.homeBannerDataLoading = false;
+    					console.log(error);
+    					this.$toast("获取banner信息异常");
+    					localStorage.clear();
+    					this.$router.go(0);
+  					});
+			},
+			getBannerImages(){
+				this.imgURL = [];
+				let openid = localStorage.getItem('openid');
+				this.imgUrlBanner.forEach((b_item,b_index) => {
+					let url = this.common_request_base_url + this.common_request_appendv1_url + 'getossmedia?media=' + b_item.mbImage + '&openid=' + openid;
+					console.log('getBannerImagesUrl====='+ url);
+					this.$http.get(url)
+						.then((response) => {
+	    					console.log(response);
+	    					//this.imgUrlBanner[b_index].img = response.data;
+	    					//this.imgUrlBanner[b_index].url = this.imgUrlBanner[b_index].mbUrl;
+	    					let img_b = {
+	    						url:'',
+	    						img:'',
+	    					};
+	    					img_b.url = b_item.mbUrl;
+	    					img_b.img = response.data;
+
+	    					let s_img_data = {
+	    						index:b_index,
+	    						data:img_b
+	    					};
+	    					this.$store.dispatch("setImageList",s_img_data);
+	    					if(b_index >= this.imgUrlBanner.length-1){
+	    						this.$store.dispatch("setHeaderImageList");
+	    						this.homeBannerLoading = false;
+	    						//this.$forceUpdate();
+	    					}
+	    					console.log(this.swiper_img_list);
+	  					})
+	  					.catch((error) => {
+	    					console.log(error);
+	    					this.$toast("获取banner图片异常");
+	  					});
+				})
+			},
+			initHomeCourseList(){
+				this.homeTempArray = [];
+				let openid = localStorage.getItem('openid');
+				this.homeArray = [];
+				let id = localStorage.getItem('dataid');
+				let url = this.common_request_base_url + this.common_request_appendv1_url + 'findallcourse?id=' + id + '&page=' + '1' + '&size=' + '5' + '&openid=' + openid;
 				this.$http.get(url)
 				.then((res) => {
-					var courceList = res.data.content.result;
-					console.log(courceList);
-					this.homeArray = courceList;
-				});
-			}
-			// choosemine() {
-			// 	console.log('choosemine');
-			// 	document.title = '我的青枝';
-			// },
-			// choosehome() {
-			// 	console.log('choosehome');
-			// 	document.title = '首页';
-			// }
+					let courceList = res.data.content.result;
+					this.homeTempArray = courceList;
+					this.homeListLoading = false;
+					console.log(this.homeTempArray);
+
+				})
+				.catch((error) => {
+	    			console.log(error);
+	    			this.$toast("获取首页课程列表异常");
+	    			localStorage.clear();
+    				this.$router.go(0);
+	  			});
+			},
+			getHomeCourseListImage(){
+				let home_array_t = [];
+				let openid = localStorage.getItem('openid');
+				this.homeTempArray.forEach((b_item,b_index) => {
+					let x_url = this.common_request_base_url + this.common_request_appendv1_url + 'getossmedia?media=' +b_item.courseLogo + '&openid=' + openid;
+					this.$http.get(x_url)
+						.then((h_res) => {
+							b_item.courseLogo_url = h_res.data;
+							this.homeArray.push(b_item);
+							//home_array_t[b_index] = b_item;
+							//this.homeArray = home_array_t;
+							//console.log(this.homeArray);
+							/*if(b_index >= this.homeTempArray.length-1){
+								//this.homeArray = home_array_t;
+								//this.$forceUpdate();
+								this.$nextTick(function () {
+									this.homeArray = home_array_t;
+								})
+
+							}*/
+						})
+						.catch((error) => {
+	    					console.log(error);
+	    					this.$toast("获取课程列表图片异常");
+	  					});
+				})
+			},
+			choosemine(){
+				this.tabbarSelect.info = '我的青枝';
+			},
+			choosehome(){
+				this.tabbarSelect.info = '首页';
+			}			
 		},
-		beforeRouteEnter (to, from, next) {
-			next(vm => {
-				let id = localStorage.getItem('dataid');
-				let url = vm.common_request_base_url + 'api/web/v1/app/findallcourse' + '?id=' + id + '&page=' + '1' + '&size=' + '5';
-				// alert(url);
-				vm.$http.get(url)
-				.then((res) => {
-					var courceList = res.data.content.result;
-					console.log(courceList);
-					vm.homeArray = courceList;
-				});
-			});
-		}
+		watch:{
+	        homeBannerDataLoading(){
+	            if(this.homeBannerDataLoading === false){
+	                if(this.imgUrlBanner.length > 0){
+	                	console.log("getBannerImages");
+	                	this.getBannerImages();
+	                }
+	            }
+	        },
+	        homeListLoading(){
+	            if(this.homeListLoading === false){
+	            	this.getHomeCourseListImage();
+	                if(this.homeBannerLoading === false){
+	                	this.$indicator.close();
+	                }
+	            }
+	        },
+	        homeBannerLoading(){
+	            if(this.homeBannerLoading === false){
+	            	console.log("this.homeBannerLoading false");
+	                if(this.homeListLoading === false){
+	                	this.$indicator.close();
+	                }
+	            }
+	        }
+    	}
+
 	};
 </script>
 <style type="text/css" scroped>

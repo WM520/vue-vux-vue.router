@@ -1,13 +1,13 @@
 <template>
 	<div class="opportunity-wrap">
 		<div class="opportunity-topHeaderDiv">
-			<img :src="this.$store.state.UserInfo.hostURL + courseDetail.courseLogo" alt="" class="opportunity-img-Grain">
+			<img :src="courseLogo" alt="" class="opportunity-img-Grain">
 			<div class="opportunity-introduce-Text">{{ courseDetail.courseName }}</div>
 			<span class="opportunity-price">拼课价:</span>
 			<span class="opportunity-now-money">￥{{ courseDetail.pinPrice }}</span>
 			<span class="opportunity-oldPrice">原价:￥{{ courseDetail.coursePrice }}</span>
 			<img src="../../assets/6.png" height="25" width="65" class="opportunity-flag">
-			<div class="opportunity-peopleNumberBox">{{ courseDetail.scale }}人团</div>
+			<div class="opportunity-peopleNumberBox">{{ courseDetail.pinNum }}人团</div>
 		</div>
 
 
@@ -17,9 +17,9 @@
 		<!-- 拼课名额部分 -->
 		<div class="opportunity-places">
 			<img src="../../assets/7.png" height="16" width="15" class="opportunity-hourglass">
-			<span class="opportunity-placesText" v-show="!(courseDetail.scale - courseDetail.pinNum)">拼课机会已被抢光</span>
-			<span class="opportunity-placesText" v-show="(courseDetail.scale - courseDetail.pinNum)">还有{{ courseDetail.scale - courseDetail.pinNum }}个拼课机会</span>
-			<button class="opportunity-success" v-show="courseDetail.scale - courseDetail.pinNum" @click="pay">我要拼课</button>
+			<span class="opportunity-placesText" v-show="!courseDetail.surplus">拼课机会已被抢光</span>
+			<span class="opportunity-placesText" v-show="courseDetail.surplus">还有{{ courseDetail.surplus }}个拼课机会</span>
+			<button class="opportunity-success" v-show="courseDetail.surplus" @click="pay">我要拼课</button>
 		</div>
 
 		
@@ -54,7 +54,9 @@ import { mapState } from 'vuex';
 export default {
 	computed: {
         ...mapState({
-            common_request_base_url: state => state.common.common_request_base_url 
+            common_request_base_url: state => state.common.common_request_base_url,
+            userinfo_data : state => state.UserInfo.userinfo_data,
+            common_request_appendv1_url: state => state.common.common_request_appendv1_url,
         })
     },
 	data() {
@@ -63,71 +65,86 @@ export default {
 				type: Object
 			},
 			opportunity: {},
-			isbuy: false
+			isbuy: false,
+			courseLogo: '',
+			userId: ''
 		};
-	},
-	components: {
-		// Tab
-	},
-	mounted() {
-		console.log(this.$route.params);
-		console.log(this.$router);
-		// if (this.$route.params.opportunity.isbuy === '1') {
-		// 	this.isbuy = true;
-		// } else {
-		// 	this.isbuy = false;
-		// };
-		let id = localStorage.getItem('dataid');
-		// let userID = this.$store.state.UserInfo.useID;
-		let url = this.common_request_base_url + this.$store.state.UserInfo.appendURL + 'findgroupcoursebycourseid?id=' + id + '&courseId=' + this.$route.params.opportunity.courseId;
-		this.$http.get(url)
-		.then((res) => {
-			console.log(res);
-			this.courseDetail = res.data.content.result;
-		});
 	},
 	methods: {
 		pay() {
-			alert('付款');
 			// 拼课支付
 			var params = {
 				id: localStorage.getItem('dataid'),
 				ubrPayType: '0',
+				// 课程type是2，拼课
 				ubrCourseType: '2',
 				ubrBuyNum: '1',
-				ubrUserId: this.$store.state.UserInfo.useID,
+				ubrUserId: this.userId,
 				ubrCoursePrice: this.courseDetail.pinPrice,
-				ubrCourseId: this.$route.params.opportunity.courseId
+				ubrCourseId: this.$route.params.opportunity.courseId,
+				openid: localStorage.getItem('openid')
 			};
-			let url = this.common_request_base_url + 'api/web/v1/app/createorder';
-			this.$http.post(url, params)
-			.then((res) => {
+			console.log(params);
+			let url = this.common_request_base_url + 'v1/app/createorder';
+			var qs = require('qs');
+			this.$http.post(url, qs.stringify(params),{
+				 headers: {
+    				'Content-Type': 'application/x-www-form-urlencoded',
+  				}
+			}).then((res) => {
 				console.log(res);
-				alert(res.data.content.result.orderNum);
-				if (res.data.content.is_success === true) {
-					let payurl = this.common_request_base_url + 'api/web/wx/wxpay?id=' + localStorage.getItem('dataid') + '&orderNumber=' + res.data.content.result.orderNum + '&total_fee=' + '1' + '&openid=' + this.$store.state.UserInfo.openID;
-					alert(payurl);
+				let money = this.courseDetail.pinPrice * 100;
+				let payurl = this.common_request_base_url + 'wx/wxpay?id=' + localStorage.getItem('dataid') + '&orderNumber=' + res.data.content.result.orderNum + '&total_fee=' + money + '&openid=' + localStorage.getItem('openid') + '&goods_body=' + this.courseDetail.courseName + '&goods_attach=' + this.courseDetail.courseName + '['+ this.$store.state.UserInfo.userId + ']' + '&goods_tag=' + '青枝';
 					this.$http.get(payurl)
-					.then((res) => {
-						console.log(res);
-						let payload = {};
-						payload.timestamp = res.data.timeStamp;
-						payload.appId = res.data.appId;
-						payload.nonceStr = res.data.nonceStr;
-						payload.package = res.data.package;
-						payload.paySign = res.data.paySign;
-						payload.signType = res.data.signType;
-						payload.success_callback = this.paySuccess;
-						this.$store.dispatch('wechatPay', payload);
-					});
-				} else {
-					alert('服务端异常');
-				};
+				.then((res) => {
+					let payload = {};
+					payload.timestamp = res.data.timeStamp;
+					payload.appId = res.data.appId;
+					payload.nonceStr = res.data.nonceStr;
+					payload.package = res.data.package;
+					payload.paySign = res.data.paySign;
+					payload.signType = res.data.signType;
+					payload.success_callback = this.paySuccess;
+					this.$store.dispatch('wechatPay', payload);
+				})
+				.catch((error) => {
+					this.$toast('服务端异常');
+				});
 			});
 		},
 		paySuccess(res) {
-			console.log(res);
+			this.$toast('拼课成功');
 		}
+	},
+	mounted() {
+		console.log(this.$route.params);
+	},
+	props: {
+		userId: ''
+	},
+	beforeRouteEnter (to, from, next) {
+		next((vm) => {
+			console.log(vm.$route.params);
+			console.log(vm.$router);
+			console.log(vm.$store.state);
+			console.log(vm.$route.params.userId);
+			vm.userId = vm.$route.params.userId;
+			let id = localStorage.getItem('dataid');
+			let url = vm.common_request_base_url + vm.common_request_appendv1_url + 'findgroupcoursebycourseid?id=' + id + '&courseId=' + vm.$route.params.opportunity.courseId + '&openid=' + localStorage.getItem('openid');
+			vm.$http.get(url)
+			.then((res) => {
+				console.log(res);
+				vm.courseDetail = res.data.content.result;
+				let url = vm.common_request_base_url + vm.common_request_appendv1_url + 'getossmedia?media=' + vm.courseDetail.courseLogo + '&openid=' + localStorage.getItem('openid');
+				vm.$http.get(url)
+				.then((res) => {
+					vm.courseLogo = res.data
+				})
+				.catch((error) => {
+					vm.$toast('获取拼课课程头像失败');
+				});
+			});
+		});
 	}
 };
 </script>
@@ -248,8 +265,8 @@ export default {
 			color:#ff2626;
 			font-family:"Microsoft Yahei";
 			position:absolute;
-			left:9rem;
-			top:5.1rem;
+			left:140px !important;
+			top:74px !important;
 		}
 		.opportunity-oldPrice{
 			text-decoration:line-through;

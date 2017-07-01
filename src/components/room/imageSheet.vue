@@ -17,6 +17,7 @@ export default {
     computed: {
         ...mapState({
             imageSheetVisibleStore: state => state.footer.isShowImageSheet,
+            isQuestionFooter: state => state.footer.isQuestionFooter
             //wx_access_token : state => state.wechat.wx_access_token
         })
     },
@@ -32,6 +33,10 @@ export default {
 
             let msg = {};
             msg.type=1;
+            msg.sendType=0;
+            if(this.isQuestionFooter){
+                msg.sendType = 2;
+            }
             //msg.content=this.msg_text_data;
             msg.content = res.serverId;
             this.$store.dispatch("sendMessage", msg);
@@ -39,8 +44,11 @@ export default {
         selectImageError:function(err,type){
             if(type == 0){
                 alert("从相册选取图片失败");
+                alert(JSON.stringify(err));
             }else{
                 alert("拍照选取图片失败");
+                alert(JSON.stringify(err));
+
             }
         },
         selectImageSuccess:function(res,type){

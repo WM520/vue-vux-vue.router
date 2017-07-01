@@ -2,7 +2,7 @@
 	<div class="orderdetails-wrap">
 		<!-- 顶部内容 -->
 		<div class="orderdetails-topImgDiv">
-			<img src="../../assets/grain.jpg" alt="" class="orderdetails-imgGrain">
+			<img :src="orderDetail.courseLogo" alt="" class="orderdetails-imgGrain">
 			
 			<div class="orderdetails-introduceText">{{ orderDetail.courseName }}</div>
 			<span class="orderdetails-introduceFoodText">{{ orderDetail.courseIntroduction }}</span>
@@ -13,7 +13,7 @@
 
 
 		<!-- 讲师 -->
-		<router-link :to="{ name: 'MyTeacher', params: { isTeacher: isTeacher }}">
+		<router-link :to="{ name: 'Teacher', params: { teacherID: orderDetail.lecturerId }}">
 			<div class="orderdetails-teacher">
 				<!-- <div class="orderdetails-teacher-box"></div> -->
 				<img :src="orderDetail.lecturerHeadImage" class="orderdetails-teacher-portrait">
@@ -100,28 +100,25 @@ import { mapState } from 'vuex';
 	export default {
 		computed: {
 	        ...mapState({
-	            common_request_base_url: state => state.common.common_request_base_url 
+	            common_request_base_url: state => state.common.common_request_base_url,
+	           	common_request_appendv1_url: state => state.common.common_request_appendv1_url,
+	            userinfo_data : state => state.UserInfo.userinfo_data
 	        })
     	},
 		data() {
 			return {
 				liveList: [{}, {}],
-				isTeacher: false,
 				orderDetail: {}
 			};
 		},
 		beforeRouteEnter (to, from, next) {
 			next(vm => {
 				// 获取课程详情
-				// alert(to.params.orderid);
 				let id = localStorage.getItem('dataid');
-				let url = vm.common_request_base_url + 'api/web/v1/app/findinfobyorderid?id=' + id + '&orderId=' + to.params.orderid;
-				// alert(url);
+				let url = vm.common_request_base_url + vm.common_request_appendv1_url +'findinfobyorderid?id=' + id + '&orderId=' + to.params.orderid + '&openid=' + localStorage.getItem('dataid');
 				vm.$http.get(url)
 				.then((res) => {
-					// alert(res.data.content.result);
 					vm.orderDetail = res.data.content.result;
-					console.log(res.data.content);
 					vm.orderDetail.createTime = vm.getLocalTime(vm.orderDetail.createTime * 1000);
 					vm.orderDetail.payTime = vm.getLocalTime(vm.orderDetail.payTime * 1000);
 					for (var i = 0; i < vm.orderDetail.courseRooms.length; i++) {
@@ -133,17 +130,33 @@ import { mapState } from 'vuex';
 						vm.orderDetail.groupUser[i].ubrCreateTime = vm.getLocalTime(vm.orderDetail.groupUser[i].ubrCreateTime * 1000);
 						};
 					};
-				}, (error) => {
-					alert(11111 + error);
-				});
+					let openid = localStorage.getItem('openid');
+					let h_url = vm.common_request_base_url + vm.common_request_appendv1_url + 'getossmedia?media=' + vm.orderDetail.courseLogo + '&openid=' + openid;;
+					vm.$http.get(h_url)
+					.then((res) => {
+						vm.orderDetail.courseLogo = res.data;
+					})
+					.catch((error) => {
+						vm.$toast('获取课程头像失败');
+					});
+					let j_url = vm.common_request_base_url + vm.common_request_appendv1_url + 'getossmedia?media=' + vm.orderDetail.lecturerHeadImage + '&openid=' + openid;;
+					vm.$http.get(j_url)
+					.then((res) => {
+						vm.orderDetail.lecturerHeadImage = res.data;
+					})
+					.catch((error) => {
+						vm.$toast('获取讲师头像失败');
+					});
+					}, (error) => {
+						this.$toast('加载失败');
+					});
+				console.log(vm.orderDetail);
 			});
 		},
 		methods: {
 			getLocalTime(now) {
 				var time = new Date(now);
-				// alert(time);
 				var year = time.getFullYear();
-				// alert(year);
 				var month = time.getMonth() + 1;
 				var date = time.getDate();
 				var hour = time.getHours();
@@ -219,7 +232,7 @@ import { mapState } from 'vuex';
 		height:0.8rem;
 		position:absolute;
 		top:88px;
-		left:116px;
+		left:102px;
 	}
 
 	.orderdetails-fireNumber{
@@ -227,7 +240,7 @@ import { mapState } from 'vuex';
 		color:#666666;
 		font-family:"Microsoft Yahei";
 		position:absolute;
-		top:90px;
+		top:88px;
 		left:8.4rem;
 	}
 	

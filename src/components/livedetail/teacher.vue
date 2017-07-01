@@ -10,7 +10,7 @@
 		<div class="myteacher-AboutInstructor-text-box">
 			<!-- <div class="myteacher-field">擅长领域 : <span>公共关系学</span></div> -->
 			<div class="myteacher-Characteristic">特点/背景 : <span>{{ lecturerIntroduction }}</span></div>
-			<img :src="lecturerHeadImage" height="576" width="1024" alt="">
+			<!-- <img :src="lecturerHeadImage" height="576" width="1024" alt=""> -->
 		</div>
 	</div>
 </template>
@@ -19,27 +19,41 @@ import { mapState } from 'vuex';
 	export default {
 		computed: {
 	        ...mapState({
-	            common_request_base_url: state => state.common.common_request_base_url 
+	            common_request_base_url: state => state.common.common_request_base_url,
+	            userinfo_data : state => state.UserInfo.userinfo_data
 	        })
     	},
 		mounted() {
+			this.$indicator.open('加载中...');
 			let id = localStorage.getItem('dataid');
-			alert(this.$route.params);
+			let userID = this.userinfo_data.useId;
+			let openid = localStorage.getItem('openid');
 			console.log(this.$route.params);
-			let url = this.common_request_base_url + 'api/web/v1/app/findlecturerbyid?id=' + id + '&lecturerId=' + this.$route.params.teacherID;
-			alert(url);
+			let url = this.common_request_base_url + 'v1/app/findlecturerbyid?id=' + id + '&lecturerId=' + this.$route.params.teacherID + '&openid=' + openid;
 			this.$http.get(url)
 			.then((res) => {
-				console.log(res);
+				this.loading = false;
 				this.lecturerHeadImage = this.$store.state.UserInfo.hostURL + res.data.content.result.lecturerHeadImage;
 				this.lecturerIntroduction = res.data.content.result.lecturerIntroduction;
+			})
+			.catch((res) => {
+				this.loading = false;
+				this.$toast('加载讲师信息失败');
 			});
 		},
 		data() {
 			return {
 				lecturerHeadImage: '',
-				lecturerIntroduction: ''
+				lecturerIntroduction: '',
+				loading: true
 			};
+		},
+		watch: {
+			loading() {
+				if (this.loading === false) {
+					this.$indicator.close();
+				};
+			}
 		}
 	};
 </script>

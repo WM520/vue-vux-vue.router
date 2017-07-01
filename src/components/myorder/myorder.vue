@@ -23,14 +23,14 @@
 							</span>
 
 							<!-- 已经领取部分 -->
-							<span class="myorder-orderNumber-text">
+							<span class="myorder-orderNumber-text" v-show="item.orderType===1">
 								已领取光
 							</span>
 						</div>
 						<div class="myorder-topImgDiv">
 							<!-- 阿里云的图片处理 -->
 							<!-- <img :src="item.imgUrl" alt="" class="myorder-imgGrain"> -->
-							<img src="../../assets/grain.jpg" alt="" class="myorder-imgGrain">
+							<img :src="item.courseLogo_url" class="myorder-imgGrain">
 							<div class="myorder-introduceText" >{{ item.courseName }}</div>
 							<span class="myorder-introduceFoodText">{{ item.courseIntroduction }}</span>
 							<img src="../../assets/lecturer@2x.png" class="myorder-userIcon">
@@ -44,7 +44,6 @@
 						</router-link>
 					</li>
 				</ul>
-<!-- 			<infinite-scroll :scroller="scroller" :loading="loading" @load="loadMore"/> -->
 		</div>
 	</div>
 </template>
@@ -55,18 +54,23 @@ import { mapState } from 'vuex';
 	export default {
 		computed: {
 	        ...mapState({
-	            common_request_base_url: state => state.common.common_request_base_url 
+	            common_request_base_url: state => state.common.common_request_base_url,
+	            common_request_appendv1_url: state => state.common.common_request_appendv1_url,
+	            userinfo_data : state => state.UserInfo.userinfo_data
 	        })
     	},
 		data() {
 			return {
-				// loading: false,
+				loading: true,
 				// scroller: null,
 				courseArray: [],
 				displayArray: [],
 				normalArray: [],
 				sendArray: [],
-				pingkeArray: []
+				pingkeArray: [],
+				normalTempArray: [],
+				sendTempArray: [],
+				pingkeTempArray: []
 			};
 		},
 		components: {
@@ -83,63 +87,128 @@ import { mapState } from 'vuex';
 				} else if (val === 2) {
 					this.displayArray = this.pingkeArray;
 				};
-			}
-			// loadMore() {
-			// 	let vue = this;
-			// 	this.loading = true;
-			// 	setTimeout(() => {
-			// 		vue.getList();
-			// 	}, 500);
-			// },
-			// getList() {
-			// 	for (var i = 0; i < 5; i++) {
-			// 		var item = {
-			// 					imgUrl: require('../../assets/grain.jpg'),
-			// 					title: '多吃谷物少吃菜,日常生活中的养生之道。谷肉果菜，食养尽之，无使过之，伤其正也。',
-			// 					introduceText: '饮食养生其实就是让身体的本能去顺应...',
-			// 					userName: '曲黎敏',
-			// 					browseCount: '10000',
-			// 					price: '$200'
-			// 				};
-			// 		this.orderList.push(item);
-			// 	};
-			// 	this.loading = false;
-			// }
+			},
+			getNormalArrayImage() {
+				let course_image_t = [];
+				this.normalTempArray.forEach((b_item, b_index) => {
+					let openid = localStorage.getItem('openid');
+					let x_url = this.common_request_base_url + this.common_request_appendv1_url + 'getossmedia?media=' + b_item.courseLogo + '&openid=' + openid;
+					this.$http.get(x_url)
+						.then((h_res) => {
+							b_item.courseLogo_url = h_res.data;
+							course_image_t[b_index] = b_item;
+							if(b_index >= this.normalTempArray.length-1){
+								this.normalArray = course_image_t;
+								console.log("this.normalArray");
+								console.log(this.normalArray);
+								this.displayArray = this.normalArray;
+							}
+						})
+						.catch((error) => {
+	    					console.log(error);
+	    					this.$toast("获取普通订单列表图片异常");
+	  					});
+				});
+			},
+			getSendArrayImage() {
+				let course_image_t = [];
+				this.sendTempArray.forEach((b_item, b_index) => {
+					let openid = localStorage.getItem('openid');
+					let x_url = this.common_request_base_url + this.common_request_appendv1_url + 'getossmedia?media=' + b_item.courseLogo + '&openid=' + openid;
+					this.$http.get(x_url)
+						.then((h_res) => {
+							b_item.courseLogo_url = h_res.data;
+							course_image_t[b_index] = b_item;
+							if(b_index >= this.sendTempArray.length-1){
+								this.sendArray = course_image_t;
+								console.log("this.sendArray");
+								console.log(this.sendArray);
+							}
+						})
+						.catch((error) => {
+	    					console.log(error);
+	    					this.$toast("获取赠送订单列表图片异常");
+	  					});
+				});
+			},
+			getPingkeTempArrayImage() {
+				let course_image_t = [];
+				let openid = localStorage.getItem('openid');
+				this.pingkeTempArray.forEach((b_item, b_index) => {
+					let x_url = this.common_request_base_url + this.common_request_appendv1_url + 'getossmedia?media=' + b_item.courseLogo+ '&openid=' + openid;
+					this.$http.get(x_url)
+						.then((h_res) => {
+							b_item.courseLogo_url = h_res.data;
+							course_image_t[b_index] = b_item;
+							if(b_index >= this.pingkeTempArray.length-1){
+								this.pingkeArray = course_image_t;
+								console.log("this.pingkeArray");
+								console.log(this.pingkeArray);
+							}
+						})
+						.catch((error) => {
+	    					console.log(error);
+	    					this.$toast("获取拼课订单列表图片异常");
+	  					});
+				});
+			},
 		},
 		mounted() {
-			// this.scroller = this.$el;
 		},
 		beforeRouteEnter (to, from, next) {
 			next(vm => {
 				// 获取订单详情
-				let userID = vm.$store.state.UserInfo.useID;
+				vm.loading = true;
+				vm.$indicator.open('加载中...');
+				let userID = vm.userinfo_data.userId;
 				let id = localStorage.getItem('dataid');
-				let url = vm.common_request_base_url + vm.$store.state.UserInfo.appendURL + 'findorderbyuserid?id=' + id + '&userId=' + userID;
-				// alert(url);
+				let openid = localStorage.getItem('openid');
+				let url = vm.common_request_base_url + vm.common_request_appendv1_url + 'findorderbyuserid?id=' + id + '&userId=' + userID + '&openid=' + openid;
+				console.log(url);
 				vm.$http.get(url)
 				.then((res) => {
+					console.log(res);
 					if (vm.courseArray.length === res.data.content.result.length) {
+						vm.loading = false;
+						vm.$indicator.close();
 						return;
 					};
 					vm.courseArray = [];
-					vm.normalArray = [];
-					vm.sendArray = [];
-					vm.pingkeArray = [];
-					vm.displayArray = [];
-					console.log(res.data);
+					vm.normalTempArray = [];
+					vm.sendTempArray = [];
+					vm.pingkeTempArray = [];
 					vm.courseArray = res.data.content.result;
 					for (var i = 0; i < vm.courseArray.length; i++) {
 						if (vm.courseArray[i].orderType === 0) {
-							vm.normalArray.push(vm.courseArray[i]);
+							vm.normalTempArray.push(vm.courseArray[i]);
 						} else if (vm.courseArray[i].orderType === 1) {
-							vm.sendArray.push(vm.courseArray[i]);
+							vm.sendTempArray.push(vm.courseArray[i]);
 						} else if (vm.courseArray[i].orderType === 2) {
-							vm.pingkeArray.push(vm.courseArray[i]);
+							vm.pingkeTempArray.push(vm.courseArray[i]);
 						};
 					};
-					vm.displayArray = vm.normalArray;
+					console.log(vm.normalTempArray);
+					console.log(vm.sendTempArray);
+					console.log(vm.pingkeTempArray);
+					vm.loading = false;
+				})
+				.catch((error) => {
+					this.$toast("获取订单异常");
+					vm.loading = true;
+					vm.$indicator.close();
 				});
 			});
+		},
+		watch: {
+			loading() {
+				if (this.loading === false) {
+					console.log("loading image");
+					this.getNormalArrayImage();
+					this.getSendArrayImage();
+					this.getPingkeTempArrayImage();
+					this.$indicator.close();
+				};
+			}
 		}
 	};
 </script>
@@ -274,7 +343,7 @@ import { mapState } from 'vuex';
 	.myorder-fire{
 		width:0.8rem;
 		height:0.8rem;
-		margin-left:0;
+		margin-left:13px;
 	}
 
 	.myorder-fireNumber{

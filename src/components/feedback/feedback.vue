@@ -20,7 +20,8 @@ import { XTextarea, Group } from 'vux';
 		},
 		computed: {
 	        ...mapState({
-	            common_request_base_url: state => state.common.common_request_base_url 
+	            common_request_base_url: state => state.common.common_request_base_url,
+	            common_request_appendv1_url: state => state.common.common_request_appendv1_url
 	        })
     	},
 		components: {
@@ -30,18 +31,23 @@ import { XTextarea, Group } from 'vux';
 		methods: {
 			// 提交服务器
 			commit() {
-				alert('提交反馈');
 				// 意见反馈接口
 				var params = {
 					id: localStorage.getItem('dataid'),
-					feedbackUserId: this.$store.state.UserInfo.useID,
-					feedbackContent: this.textValue
+					feedbackUserId: this.$store.state.UserInfo.userinfo_data.userId,
+					feedbackContent: this.textValue,
+					openid: localStorage.getItem('openid')
 				};
-				let url = this.common_request_base_url+'api/web/v1/app/savefeedback';
-				this.$http.post(url, params)
-				.then((res) => {
-					alert('反馈成功');
-					this.$router.go(-1);
+				let url = this.common_request_base_url + this.common_request_appendv1_url +'savefeedback';
+				var qs = require('qs');
+				this.$http.post(url, qs.stringify(params),{
+				 headers: {
+    				'Content-Type': 'application/x-www-form-urlencoded'
+  				}
+				}).then((res) => {
+					this.$toast("反馈成功");
+					// this.$router.go(-1);
+					setTimeout(() => this.$router.go(-1), 3000);
 				});
 			},
 			// 取输入框的值

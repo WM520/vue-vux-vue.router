@@ -33,13 +33,13 @@
   			<!-- 直播间的信息 -->
   			<li v-for="item in courceList" @click="goToLive(item)">
 	  				<div class="arrangeList">
-	  					<span class="text">{{ item.roomName }}<br>2017.03.16 16:00-17.00</span>
+	  					<span class="text">{{ item.roomName }}<br>{{ item.roomStartTime * 1000 | formatDate }} {{ item.roomEndTime * 1000 | formatDate }}</span>
 	  					<img src="../../assets/live.png" class="isLive" v-show="!item.roomType">
 	  				</div>
   			</li>
   		</ul>
   	</div>
-  	<v-footer class="tool" :itemInfo="modal"></v-footer>
+  	<v-footer class="tool" :itemInfo="modal" @on-change="isbuychange" :userId="userinfo_data.userId" :lecturerId="userinfo_data.lecturerId" :userNickname="userinfo_data.userNickname" @paySuccess="paySuccess"></v-footer>
   	<!-- 分隔块3 -->
   	<div class="recent-interval"></div>
   </div>
@@ -49,10 +49,13 @@
 import split from '@/components/split/split';
 import Footer from '@/components/livedetailfooter/livedetailfooter';
 import { mapState } from 'vuex';
+import {formatDate} from '../../utils/datetime.js';
  export default {
  	computed: {
 	    ...mapState({
-	        common_request_base_url: state => state.common.common_request_base_url 
+	        common_request_base_url: state => state.common.common_request_base_url,
+	        common_request_appendv1_url: state => state.common.common_request_appendv1_url,
+	        userinfo_data : state => state.UserInfo.userinfo_data
 	    })
     },
  	components: {
@@ -75,26 +78,43 @@ import { mapState } from 'vuex';
  			lecturerId: '',
  			modal: {},
  			courseId: '',
- 			liveRoom: {}
+ 			liveRoom: {},
+ 			loading: true
  		};
  	},
  	mounted() {
  		this.scroller = this.$el;
+ 		this.userId = this.userinfo_data.userId;
+ 		this.initDetail();
  	},
  	methods: {
+ 		initDetail(){
+ 				let u = navigator.userAgent;
+ 			    if(u.indexOf('Android') > -1 || u.indexOf('Adr') > -1){
+				//if(!!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/)){
+					//currentUrl = currentUrl + 'livedetail/liveroom/'
+					let currentUrl = location.href;
+
+					console.log("currenturl:="+currentUrl);
+					this.$store.dispatch("getWeChatSignature",currentUrl);
+				}
+
+ 		},
+ 		isbuychange() {
+ 			this.modal.isbuy = 1;
+ 		},
  		goToLive(val) {
- 			alert(this.lecturerId);
- 			alert(this.$store.state.UserInfo.lecturerId);
- 			console.log(this.$store.state.UserInfo.lecturerId === this.lecturerId);
- 			if (this.lecturerId === this.$store.state.UserInfo.lecturerId) {
+ 			console.log(this.userinfo_data);
+ 			if (this.lecturerId === this.userinfo_data.lecturerId) {
  				if (val.roomType === 1) {
- 					this.$router.push({ name: 'LiveAudio', params: { roomId: val.roomId }});
+ 					this.$router.push({ name: 'LiveAudio', params: { room: val }});
  				} else if (val.roomType === 0) {
  					let id = localStorage.getItem('dataid');
-		            let userID = this.$store.state.UserInfo.useID;
-		            let url = this.common_request_base_url + 'api/web/v1/app/findinfobyroomidanduserid?id=' + id + '&userId=' + userID + '&roomId=' + val.roomId;
+		            let openid = localStorage.getItem('openid');
+		            let url = this.common_request_base_url + 'v1/app/findinfobyroomidanduserid?id=' + id + '&userId=' + this.userId  + '&roomId=' + val.roomId + '&openid=' + openid;
 		       	    this.$http.get(url)
 		            .then((res) => {
+		            	console.log(res);
 		                this.liveRoom = res.data.content.result;
 		                this.$router.push({ name: 'LiveRoom', params: { liveroom: this.liveRoom }});
 	                });
@@ -102,61 +122,92 @@ import { mapState } from 'vuex';
  			} else {
  				if (val.roomType === 1) {
 	 				if (this.modal.isbuy === 1) {
-	 					this.$router.push({ name: 'LiveAudio', params: { roomId: val.roomId }});
+	 					this.$router.push({ name: 'LiveAudio', params: { room: val }});
 	 				 } else {
-	 					alert('请先购买课程');
+	 					this.$toast('请先购买课程');
 	 				};
 	 			} else if (val.roomType === 0) {
 	 				console.log('直播介绍');
 	 				if (this.modal.isbuy === 1) {
 	 					let id = localStorage.getItem('dataid');
-		                let userID = this.$store.state.UserInfo.useID;
-		                console.log(this.$store.state.UserInfo.useID);
-		                let url = this.common_request_base_url + 'api/web/v1/app/findinfobyroomidanduserid?id=' + id + '&userId=' + userID + '&roomId=' + val.roomId;
+		                let openid = localStorage.getItem('openid');
+		                let url = this.common_request_base_url + 'v1/app/findinfobyroomidanduserid?id=' + id + '&userId=' + this.userId  + '&roomId=' + val.roomId + '&openid=' + openid;
 		                console.log(url);
 		                this.$http.get(url)
 		                .then((res) => {
+		                	console.log(res);
 		                    this.liveRoom = res.data.content.result;
 		                    this.$router.push({ name: 'LiveRoom', params: { liveroom: this.liveRoom }});
 		                });
 	 				} else {
-	 					alert('请先购买课程');
+	 					this.$toast('请先购买课程');
 	 				};
  				};
  			};
+ 		},
+ 		paySuccess() {
+ 			this.modal.buy = 1;
  		}
  	},
  	beforeRouteEnter (to, from, next) {
 		next(vm => {
 			// 获取课程详情
+			vm.loading = true;
+			vm.$indicator.open('加载中...');
 	 		let id = localStorage.getItem('dataid');
-	 		let userID = vm.$store.state.UserInfo.useID;
+	 		let userID = vm.userinfo_data.userId;
 	 		let courseId = to.params.id;
+	 		let openid = localStorage.getItem('openid');
 	 		console.log(courseId !== undefined);
 	 		// 判断是带参数进入还是不带参数
 	 		if (courseId !== undefined) {
 	 			vm.courseId = courseId;
 	 		};
 	 		console.log(vm.courseId);
-	 		let url = vm.common_request_base_url + 'api/web/v1/app/findcoursebyid?id=' + id + '&courseId=' + vm.courseId + '&userId=' + userID;
-	 		alert(url);
+	 		let url = vm.common_request_base_url + vm.common_request_appendv1_url +'findcoursebyid?id=' + id + '&courseId=' + vm.courseId + '&userId=' + userID + '&openid=' + openid;
 	 		console.log(url);
 			vm.$http.get(url)
 			.then((res) => {
 				console.log(res.data);
+				vm.loading = false;
 				var modal = res.data.content.result;
 				vm.modal = modal;
 				console.log(vm.modal);
 				vm.courceList = modal.courseRooms;
 				vm.courseIntroduction = modal.courseIntroduction;
-				vm.courseCoverImage = vm.$store.state.UserInfo.hostURL + modal.courseCoverImage;
-				vm.lecturerHeadImage = modal.lecturerHeadImage;
+				let courseCoverImageUrl = vm.common_request_base_url + vm.common_request_appendv1_url +'getossmedia' + '?media=' + modal.courseCoverImage + '&openid=' + openid;
+				vm.$http.get(courseCoverImageUrl)
+				.then((res) => {
+					console.log(res.data);
+					vm.courseCoverImage = res.data;
+				});
+				let lecturerHeadImageUrl = vm.common_request_base_url + vm.common_request_appendv1_url +'getossmedia' + '?media=' + modal.lecturerHeadImage + '&openid=' + openid;
+				vm.$http.get(lecturerHeadImageUrl)
+				.then((res) => {
+					vm.lecturerHeadImage = res.data;
+				});
 				vm.lecturerName = modal.lecturerName;
 				vm.courseMainIntroduction = modal.courseMainIntroduction;
 				vm.lecturerId = modal.lecturerId;
-				vm.lecturerHeadImage = vm.$store.state.UserInfo.hostURL + modal.lecturerHeadImage;
+			})
+			.catch((error) => {
+				vm.loading = false;
+				vm.$toast('加载课程详情失败');
 			});
 		});
+    },
+    watch: {
+    	loading() {
+    		if (this.loading === false) {
+    			this.$indicator.close();
+    		};
+    	}
+    },
+    filters: {
+	    formatDate(time) {
+	        var date = new Date(time);
+	        return formatDate(date, 'yyyy-MM-dd hh:mm');
+	    }
     }
  };
 </script>

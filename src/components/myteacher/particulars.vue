@@ -1,18 +1,6 @@
 <template>
 	<div class="withdrawal-wrapper">
-		<div class="withdrawal-detail">
-			<div class="avatar">
-				<img src="../../assets/grain.jpg" class="icon">
-			</div>
-			<div class="content">
-				<span class="title">多吃谷物少吃菜，日常生活中的养生之道。谷肉果蔬，食养尽之，无使过之，伤其正也。</span>
-				<span class="time">2017-04-24 18:00-19:00</span>
-			</div>
-			<div class="price">
-				<div class="count">+300</div>
-			</div>
-		</div>
-		<div class="withdrawal-detail">
+		<div class="withdrawal-detail" v-for="item in incomelist">
 			<div class="avatar">
 				<img src="../../assets/grain.jpg" class="icon">
 			</div>
@@ -32,7 +20,8 @@ import { mapState } from 'vuex';
 	export default {
 		computed: {
 	        ...mapState({
-	            common_request_base_url: state => state.common.common_request_base_url 
+	            common_request_base_url: state => state.common.common_request_base_url,
+	            common_request_appendv1_url: state => state.common.common_request_appendv1_url 
 	        })
     	},
 		components: {
@@ -41,13 +30,24 @@ import { mapState } from 'vuex';
 		beforeRouteEnter (to, from, next) {
 			next(vm => {
 				let id = localStorage.getItem('dataid');
-				let lecturerId = vm.$store.state.UserInfo.lecturerId;
-				let url = vm.common_request_base_url + 'api/web/v1/app/findincomeandcoursebyid?id=' + id + '&lecturerId=' + lecturerId;
+				let openid = localStorage.getItem('openid');
+				let lecturerId = vm.$store.state.UserInfo.userinfo_data.lecturerId;
+				let url = vm.common_request_base_url + vm.common_request_appendv1_url +'findincomeandcoursebyid?id=' + id + '&lecturerId=' + lecturerId + '&openid=' + openid;
 				vm.$http.get(url)
 				.then((res) => {
 					console.log(res);
+					if (res.data.content.result !== null || res.data.content.result !== undefined) {
+						if (res.data.content.result.length > 0) {
+							vm.incomelist = res.data.content.result;
+						};	
+					};
 				});
 			});
+		},
+		data() {
+			return {
+				incomelist: []
+			}
 		}
 	};
 </script>

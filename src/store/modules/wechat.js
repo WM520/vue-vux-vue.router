@@ -2,7 +2,7 @@ import Vue from 'vue'
 import wx from 'weixin-js-sdk'
 
 const state = {
-    wx_debug: true,
+    wx_debug: false,
     wx_access_token:'',
     isRecordingVoice:false,
     recordVoiceTime:0,
@@ -30,35 +30,30 @@ const mutations = {
         config.signature = params.signature;
         config.jsApiList = params.jsApiList;
         wx.config(config);
-        //wx.ready(function(){
-        //    console.log("wx config ok");
-        //});
-        //wx.error(function(res){
-        //    console.log("wx error ok");
-        //});
+        /*wx.ready(function(){
+           alert("wx config ok");
+        });
+         wx.error(function(res){
+            alert("wx error ok");
+         });*/
     },
     GETACCESSTOKEN(state, payload) {
         console.log(payload.res);
     },
     SELECTIMAGE(state, payload) {
-        let source_type = [];
-        if (payload.type == 0) {
-            source_type = ['album'];
-        } else {
-            source_type = ['camera'];
-        }
         wx.chooseImage({
-            count: 1,
-            sizeType: ['original', 'compressed'],
-            sourceType: source_type,
-            success: function (res) {
-                //alert(JSON.stringify(res));
-                payload.success_callback(res, payload.type);
-            },
-            fail: function (err) {
-                payload.error_callback(err, payload.type);
-            }
-        })
+                count: 1,
+                sizeType: ['original', 'compressed'],
+                sourceType: payload.type ? ['camera'] : ['album'],
+                success: function (res) {
+                    //alert(JSON.stringify(res));
+                    payload.success_callback(res, payload.type);
+                },
+                fail: function (err) {
+                    //alert(JSON.stringify(err));
+                    payload.error_callback(err, payload.type);
+                }
+        });
     },
     UPLOADIMAGE(state, payload) {
         //alert(JSON.stringify(payload.res));
@@ -117,7 +112,7 @@ const mutations = {
             localId: payload.res.localId,
             isShowProgressTips: 0,//默认是1，显示进度提示信息
             success: function(res){
-                alert(JSON.stringify(res));
+                // alert(JSON.stringify(res));
                 payload.success_callback(res);
                 //alert(JSON.stringify(res));
             },
@@ -154,7 +149,8 @@ const actions = {
     },
     getWeChatSignature({commit}, url) {
         //let url = 'http://wx.mozziewang.xyz/liveroom/roomname/dd/rid/1/username/ddddd/uid/1/usertype/1';
-        let jsonp_url = 'http://wx.mozziewang.xyz/api/web/wx/getsignature?url=' + url;
+        let jsonp_url = 'http://wxapi.qingzz.com/wx/getsignature?url=' + url;
+        console.log(jsonp_url);
         Vue.http.get(jsonp_url).then(function (response) {
             var init_config_val = {};
             init_config_val.appId = response.data.appId;

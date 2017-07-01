@@ -14,7 +14,7 @@
 				</div>
 				<div class="price" @click="pay">
 					<img src="../../assets/buyed@2x.png" v-show="itemInfo.isbuy" class="buyicon">
-					<span class="count">{{ itemInfo.coursePrice }}</span>
+					<span class="count">{{ itemInfo.coursePrice }}￥</span>
 				</div>
 			</div>		
 		</div>
@@ -38,7 +38,9 @@ import { mapState } from 'vuex';
 export default {
 	computed: {
 	    ...mapState({
-	        common_request_base_url: state => state.common.common_request_base_url 
+	        common_request_base_url: state => state.common.common_request_base_url,
+	        common_request_appendv1_url: state => state.common.common_request_appendv1_url,
+	        userinfo_data : state => state.UserInfo.userinfo_data
 	    })
     },
 	data () {
@@ -74,27 +76,32 @@ export default {
 			this.pingkeObject.count = val1;
 			this.pingkeObject.totalPrice = val2;
 			this.payType = '0';
+			console.log(this.userinfo_data.userId);
 			// 价钱要修改
 			var params = {
 				id: localStorage.getItem('dataid'),
 				ubrCourseId: this.itemInfo.courseId,
-				ubrUserId: this.$store.state.UserInfo.useID,
+				ubrUserId: this.userId,
 				ubrCoursePrice: this.itemInfo.coursePrice,
 				ubrBuyNum: val1,
 				ubrCourseType: '1',
-				ubrPayType: '0'
+				ubrPayType: '0',
+				openid: localStorage.getItem('openid')
 			};
-			let url = this.common_request_base_url + 'api/web/v1/app/createorder';
-			alert(url);
-			this.$http.post(url, params)
-			.then((res) => {
-				alert(res.data.content.result.orderNum);
-				console.log(res.data.content.result.orderNum);
+			console.log(params);
+			let url = this.common_request_base_url + this.common_request_appendv1_url + 'createorder';
+			let money = val1 * this.itemInfo.coursePrice * 100;
+			var qs = require('qs');
+			this.$http.post(url, qs.stringify(params),{
+				 headers: {
+    				'Content-Type': 'application/x-www-form-urlencoded',
+  				}
+			}).then((res) => {
+				console.log(res);
 				this.orderID = res.data.content.result.orderId;
-				let payurl = this.common_request_base_url + 'api/web/wx/wxpay?id=' + localStorage.getItem('dataid') + '&orderNumber=' + res.data.content.result.orderNum + '&total_fee=' + '1' + '&openid=' + this.$store.state.UserInfo.openID;
+				let payurl = this.common_request_base_url + 'wx/wxpay?id=' + localStorage.getItem('dataid') + '&orderNumber=' + res.data.content.result.orderNum + '&total_fee=' + money + '&openid=' + localStorage.getItem('openid') + '&goods_body=' + this.itemInfo.courseName + '&goods_attach=' + this.itemInfo.courseName + '['+ this.userNickname + ']' + '&goods_tag=' + '青枝';
 				this.$http.get(payurl)
 				.then((res) => {
-					console.log(res);
 					let payload = {};
 					payload.timestamp = res.data.timeStamp;
 					payload.appId = res.data.appId;
@@ -124,34 +131,47 @@ export default {
 		goToOpportunity() {
 			console.log(this.itemInfo.courseIsPin);
 			if (this.itemInfo.courseIsPin === 1) {
-				this.$router.push({name: 'Opportunity', params: {opportunity: this.itemInfo}});
+				this.$router.push({name: 'Opportunity', params: {opportunity: this.itemInfo, userId: this.userId}});
 			} else {
-				alert('此课程不能拼课');
+				this.$toast('此课程不能拼课');
 			}
 		},
 		pay() {
 			if (this.itemInfo.isbuy === 1) {
-				alert('您已经购买');
+				this.$toast('您已经购买');
+				return;
+			};
+			// 判断是否是该课程讲师
+			if (this.itemInfo.lecturerId === this.lecturerId) {
+				this.$toast('您是该课程讲师，不需要购买此课程');
 				return;
 			};
 			// 价钱要修改
 			var params = {
 				id: localStorage.getItem('dataid'),
 				ubrCourseId: this.itemInfo.courseId,
-				ubrUserId: this.$store.state.UserInfo.useID,
+				ubrUserId: this.userId,
 				ubrCoursePrice: this.itemInfo.coursePrice,
 				ubrBuyNum: '1',
 				ubrCourseType: '0',
-				ubrPayType: '0'
+				ubrPayType: '0',
+				openid: localStorage.getItem('openid')
 			};
+			console.log(params);
 			this.payType = '1';
-			let url = this.common_request_base_url + 'api/web/v1/app/createorder';
-			alert(url);
-			this.$http.post(url, params)
-			.then((res) => {
-				alert(res.data.content.result.orderNum);
+			let url = this.common_request_base_url + this.common_request_appendv1_url + 'createorder';
+			var qs = require('qs');
+			this.$http.post(url, qs.stringify(params),{
+				 headers: {
+    				'Content-Type': 'application/x-www-form-urlencoded',
+  				}
+			}).then((res) => {
+				console.log(res.data);
+				// alert(res.data.content.orderNum);
+				let money = this.itemInfo.coursePrice * 100;
 				this.orderID = res.data.content.result.orderId;
-				let payurl = this.common_request_base_url + 'api/web/wx/wxpay?id=' + localStorage.getItem('dataid') + '&orderNumber=' + res.data.content.result.orderNum + '&total_fee=' + '1' + '&openid=' + this.$store.state.UserInfo.openID;
+				let payurl = this.common_request_base_url + 'wx/wxpay?id=' + localStorage.getItem('dataid') + '&orderNumber=' + res.data.content.result.orderNum + '&total_fee=' + money + '&openid=' + localStorage.getItem('openid') + '&goods_body=' + this.itemInfo.courseName + '&goods_attach=' + this.itemInfo.courseName + '['+ this.userNickname + ']' + '&goods_tag=' + '青枝';;
+				// alert(url);
 				this.pingkeObject.count = '1';
 				this.pingkeObject.totalPrice = res.data.content.result.coursePrice;
 				this.$http.get(payurl)
@@ -174,22 +194,30 @@ export default {
 		},
 		paySuccess(res) {
 			if (this.payType === '0') {
-				this.priceshow = true;
+				// this.priceshow = true;
+				this.itemInfo.isbuy = 1;
 			} else if (this.payType === '1') {
-				this.normalpriceshow = true;
+				// this.normalpriceshow = true;
+				this.itemInfo.isbuy = 1;
 			};
 			var params = {
 				id: localStorage.getItem('dataid'),
-				userId: this.$store.state.UserInfo.useID,
-				// ubrPayMoney: this.itemInfo.coursePrice,
+				ubrUserId: this.userId,
 				ubrPayMoney: '0.01',
-				orderId: this.orderID
+				orderId: this.orderID,
+				openid: localStorage.getItem('openid')
 			};
-			let url = this.common_request_base_url + 'api/web/v1/app/updateorder';
-			this.$http.post(url, params)
-			.then((res) => {
-				alert(res.data.content.result);
-			})
+			let openid = localStorage.getItem('openid');
+			let url = this.common_request_base_url + this.common_request_appendv1_url +'updateorder';
+			var qs = require('qs');
+			this.$http.post(url, qs.stringify(params),{
+				 headers: {
+    				'Content-Type': 'application/x-www-form-urlencoded',
+  				}
+			}).then((res) => {
+				this.$emit('paySuccess');
+				this.$toast('支付成功');
+			});
 		}
 	},
 	components: {
@@ -207,7 +235,10 @@ export default {
 						title: '送你一朵fua'
 					};
 			}
-		}
+		},
+		userId: '',
+		lecturerId: '',
+		userNickname: ''
 	},
 	created() {
 		this.classMap = ['noBuy', 'buy'];
@@ -216,8 +247,12 @@ export default {
 		
 	},
 	ready() {
+	},
+	watch: {
+		// this.itemInfo.isbuy() {
+		// 	this.$emit('on-change', this.itemInfo);
+		// }
 	}
-
 };
 </script>
 <style lang="stylus" scroped>

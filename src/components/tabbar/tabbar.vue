@@ -15,6 +15,7 @@
 	</div>
 </template>
 <script type="text/javascript">
+	import { mapState } from 'vuex';
 	export default {
 		props: {
 			tabSelect: {
@@ -28,6 +29,12 @@
 				mineImg: require('./minenormal.png')
 			};
 		},
+		computed: {
+	        ...mapState({
+	            common_request_base_url: state => state.common.common_request_base_url,
+            	userinfo_data : state => state.UserInfo.userinfo_data
+	        })
+    	},
 		created() {
 			this.classMap = ['homeselected', 'mineselected'];
 		},
@@ -37,40 +44,38 @@
 					return;
 				} else {
 					this.selectedtab = 0;
-					this.tabSelect.info = '首页';
-					// document.title = '首页';
 					this.homeImg = require('./homeselect.png');
 					this.mineImg = require('./minenormal.png');
-					window.localStorage.tabSelect = '首页';
 					this.$emit('choosehome');
-					console.log(window.localStorage.tabSelect);
 				};
 			},
 			choosemine() {
 				if (this.selectedtab === 0) {
 					this.selectedtab = 1;
-					this.tabSelect.info = '我的青枝';
-					// document.title = '我的青枝';
 					this.homeImg = require('./homenormal.png');
 					this.mineImg = require('./mineselect.png');
-					window.localStorage.tabSelect = '我的青枝';
+					this.getUserHeaderImage();
 					this.$emit('choosemine');
-					console.log(window.localStorage.tabSelect);
 				} else {
 					return;
 				};
+			},
+			getUserHeaderImage(){
+				console.log(this.userinfo_data);
+				let url = this.common_request_base_url +'v1/app/getossmedia' + '?media=' + this.userinfo_data.userHeadImage;
+				console.log(url);
+				this.$http.get(url)
+					.then((response) => {
+    					console.log(response);
+    					this.$store.dispatch("getUserHeaderImage",response.data);
+    					//this.user_header_image = response.data;
+  					})
+  					.catch((error) => {
+  						this.homeBannerDataLoading = false;
+    					console.log(error);
+    					this.$toast("获取头像信息异常");
+  					});
 			}
-		},
-		mounted() {
-			if (window.localStorage.tabSelect === '我的青枝') {
-				this.selectedtab = 1;
-				this.homeImg = require('./homenormal.png');
-				this.mineImg = require('./mineselect.png');
-			} else if (window.localStorage.tabSelect === '首页') {
-				this.selectedtab = 0;
-				this.homeImg = require('./homeselect.png');
-				this.mineImg = require('./minenormal.png');
-			};
 		}
 	};
 </script>

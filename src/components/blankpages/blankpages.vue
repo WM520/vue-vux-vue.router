@@ -1,5 +1,5 @@
 <template>
-	<div class="content">
+	<div class="blank-content">
 		<div class="img-wrapper">
 			<!-- <slot class="imgtitle"></slot> -->
 			<img src="../../assets/blankpages.png" class="blankimg">
@@ -12,7 +12,7 @@
 	};
 </script>
 <style lang="stylus" scroped>
- .content
+ .blank-content
  	width: 100vw
  	height: 100vh
  	// background-color: red

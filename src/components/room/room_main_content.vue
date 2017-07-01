@@ -1,6 +1,6 @@
 <template>
 <div>
-   <div class="room-main-content" :style="{'height':room_main_content_height+'px'}">
+   <div class="room-main-content" :style="{'height':room_main_content_height+'px'}" ref="mainContentScroll">
         <div class="item-box" v-for="( msg_item, index ) in roomMsgList">
             <div class="item-time">{{msg_item.data.msg_time | formatDate}}</div>
             <div class="item-content clearfix">
@@ -35,10 +35,10 @@
 
                         <!-- audio -->
                         <div @click="audioPlay(index)" class="msg audio" v-else-if="parseInt(msg_item.data.type) == 2">
-                            <audio :src="'data:audio/x-mpeg;base64,'+msg_item.data.content"></audio>
+                            <!--<audio :src="'data:audio/mpeg;base64,'+msg_item.data.content"></audio>-->
                             <div class="audio-play-btn">
-                                <div class="audio-play-pause-btn" ></div>
-                                <div class="audio-play-playing-btn" style="display:none;"></div>
+                                <div :id="'playbtn_'+index" class="audio-play-pause-btn"></div>
+                                <div :id="'pausebtn_'+index" class="audio-play-playing-btn" style="display:none;"></div>
                             </div>
                             <div class="mt-progress audio-play-progress">
                                 <div class="mt-progress-content">
@@ -105,8 +105,8 @@ import {formatDate} from '../../utils/datetime.js'
 export default {
     data () {
         return {
-            item_content_width: document.body.clientWidth - 60,
-            item_image_max_width: document.body.clientWidth / 2
+            item_content_width: document.body.clientWidth - 65,
+            item_image_max_width: (document.body.clientWidth-10) / 2
         }
     },
     components: {
@@ -117,6 +117,9 @@ export default {
             isShowRoomFooter: state => state.room.isShowRoomFooter,
             room_main_content_height: state => state.room.roomMainContentHeight,
             roomMsgList:state => state.chat.current_room_msg_list,
+            play_status: state => state.audio.play_status,
+            play_index : state => state.audio.play_index,
+            stop_index : state => state.audio.stop_index
         })
     },
     filters: {
@@ -127,15 +130,84 @@ export default {
     },
     methods: {
         audioPlay(i_index){
-            alert("i_index:"+i_index);
+            if(this.play_index != i_index){
+                //console.log(this.roomMsgList[this.play_index]);
+                if(this.roomMsgList[this.play_index] !== undefined){
+                    //document.getElementById('playbtn_'+play_index)
+                }
+                let message_data = this.roomMsgList[i_index];
+                console.log(message_data);
+                if(message_data.data.content == null || message_data.data.content.length <= 0){
+                    return;
+                }
+                let audio_data = {};
+                audio_data.content = message_data.data.content;
+                audio_data.play_index = i_index;
+                audio_data.play_status = 0;
+                if(this.play_status != 0){  
+                    this.$store.dispatch("audioStop",this.play_index);
+                }
+                this.$store.dispatch("setAudioInfo", audio_data);
+                //document.getElementById('playbtn_'+i_index).setAttribute("style","display:none");
+                //document.getElementById('pausebtn_'+i_index).setAttribute("style","");
+                document.getElementById('playbtn_'+i_index).style.display="none";
+                document.getElementById('pausebtn_'+i_index).style.display="";
+            }else{
+                if(this.play_status == 0){
+                    let message_data = this.roomMsgList[i_index];
+                    if(message_data.data.content == null || message_data.data.content.length <= 0){
+                        return;
+                    }
+                    let audio_data = {};
+                    audio_data.content = message_data.data.content;
+                    audio_data.play_index = i_index;
+                    audio_data.play_status = 0;
+                    this.$store.dispatch("setAudioInfo", audio_data);
+                    document.getElementById('playbtn_'+i_index).style.display="none";
+                    document.getElementById('pausebtn_'+i_index).style.display="";
+                }else if(this.play_status == 1){
+                    this.$store.dispatch("audioPause",i_index);
+                    //document.getElementById('playbtn_'+this.stop_index).style.display="";
+                    //document.getElementById('pausebtn_'+this.stop_index).style.display="none";
+                }else{
+                    this.$store.dispatch("audioPlay");
+                    document.getElementById('playbtn_'+i_index).style.display="none";
+                    document.getElementById('pausebtn_'+i_index).style.display="";
+                }
+            }
+            
+            // alert("i_index:"+i_index);
             //let audio = document.querySelector("#"+message_id);
-            let message_data = this.roomMsgList[i_index];
+            /*let message_data = this.roomMsgList[i_index];
             let audio_data = {};
             audio_data.content = message_data.data.content;
-            alert(audio_data.content)
+            audio_data.play_index = i_index;
+            if(audio_data.content == null || audio_data.content.length <= 0){
+                return;
+            }
+            // alert(audio_data.content)
             this.$store.dispatch("setAudioInfo", audio_data);
-            this.$store.dispatch("audioPlay");
+            this.$store.dispatch("audioPlay");*/
 
+        }
+    },
+    watch:{
+        roomMsgList(){
+            this.$nextTick(()=>{
+                this.$refs.mainContentScroll.scrollTop = this.$refs.mainContentScroll.scrollHeight;
+            });
+        },
+        play_status(){
+            if(this.play_status == 0){
+                console.log(this.stop_index);
+                document.getElementById('playbtn_'+this.stop_index).style.display="";
+                document.getElementById('pausebtn_'+this.stop_index).style.display="none";
+            }
+            if(this.play_status == 2){
+                console.log(this.stop_index);
+                document.getElementById('playbtn_'+this.stop_index).style.display="";
+                document.getElementById('pausebtn_'+this.stop_index).style.display="none";
+            }
         }
     }
 }

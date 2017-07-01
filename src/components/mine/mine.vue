@@ -2,8 +2,8 @@
 	<div class="minecontent">
 
 		<group>
-			<cell :title="userName"  :link="{name:'MineDetail'}" is-link>
-				<img slot="icon" :src=iconImg style="display:block; margin-right:5px; width:60px; -webkit-border-radius: 50px">
+			<cell :title="userinfo_data.userNickname"  :link="{name:'MineDetail'}" is-link>
+				<img slot="icon" :src="user_header_image" style="display:block; margin-right:5px; width:60px; -webkit-border-radius: 50px">
 			</cell>
 		</group>
 		<group>
@@ -15,7 +15,7 @@
 	      	</cell>
 		</group>
 		<group>
-			<cell title="讲师入口"  :link="{name:'MyTeacher', params: { isTeacher:isTeacher }}" is-link>
+			<cell title="讲师入口"  :link="{name:'MyTeacher', params: { isTeacher: userinfo_data.userIsLecturer }}" is-link>
 				<img slot="icon" src="../../assets/teacher.png" style="display:block; margin-right:5px" width="16">
 			</cell>
 		</group>
@@ -36,7 +36,10 @@
 	export default {
 		computed: {
 	        ...mapState({
-	            common_request_base_url: state => state.common.common_request_base_url 
+	            common_request_base_url: state => state.common.common_request_base_url,
+            	userinfo_data : state => state.UserInfo.userinfo_data,
+            	user_header_image : state => state.UserInfo.user_header_image,
+            	common_request_appendv1_url: state => state.common.common_request_appendv1_url
 	        })
     	},
 		components: {
@@ -46,9 +49,6 @@
 		},
 		data() {
 			return {
-				isTeacher: this.$store.state.UserInfo.userIsLecturer,
-				userName: this.$store.state.UserInfo.userName,
-				iconImg: this.$store.state.UserInfo.headimgurl
 			};
 		}
 	};

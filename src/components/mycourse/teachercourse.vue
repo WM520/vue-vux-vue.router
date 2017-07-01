@@ -7,11 +7,11 @@
 			
 				<li v-for="item in courseArray">
 					<router-link :to="{name:'LiveDetail', params: { id:item.courseId }}">
-						<div class="order">
+<!-- 						<div class="order">
 							<span class="ordertext">订单号: {{ item.orderNumber }}</span>
-						</div>
+						</div> -->
 						<div id="topImgDiv">
-						<img :src="item.courseLogo_url" class="imgGrain">
+						<img :src="item.courseLogo_url" alt="" class="imgGrain">
 <!-- 						<div class="begin"></div>
 						<span class="beginText">即将开始</span> -->
 						<div class="introduceText">{{ item.courseName }}</div>
@@ -37,51 +37,41 @@ import { mapState } from 'vuex';
 	        ...mapState({
 	            common_request_base_url: state => state.common.common_request_base_url,
 	            userinfo_data : state => state.UserInfo.userinfo_data,
-	            common_request_appendv1_url: state => state.common.common_request_appendv1_url
+	            common_request_appendv1_url: state => state.common.common_request_appendv1_url 
 	        })
     	},
 		data() {
 			return {
-				courseLoading: true,
 				courseArray: [],
-				courseTempArray: []
+				courseTempArray: [],
+				courseLoading: true
 			};
 		},
 		components: {
 			split,
 			blankpage: BlankPage
 		},
-		methods: {
-			getCourseImage() {
-				let course_image_t = [];
-				let openid = localStorage.getItem('openid');
-				this.courseTempArray.forEach((b_item, b_index) => {
-					let x_url = this.common_request_base_url + this.common_request_appendv1_url + 'getossmedia?media=' + b_item.courseLogo + '&openid=' + openid;
-					this.$http.get(x_url)
-						.then((h_res) => {
-							b_item.courseLogo_url = h_res.data;
-							course_image_t[b_index] = b_item;
-							if(b_index >= this.courseTempArray.length-1){
-								this.courseArray = course_image_t;
-								console.log("this.courseArray");
-								console.log(this.courseArray);
-							}
-						})
-						.catch((error) => {
-	    					console.log(error);
-	    					this.$toast("获取课程列表图片异常");
-	  					});
-				});
-			}
-		},
+		// beforeRouteEnter (to, from, next) {
+		// 	next(vm => {
+		// 		let id = localStorage.getItem('dataid');
+		// 		let lecturerId = vm.$store.state.UserInfo.lecturerId;
+		// 		let url = vm.common_request_base_url + vm.$store.state.UserInfo.appendURL + 'findcoursebylecturerid?id=' + id + '&lecturerId=' + lecturerId;
+		// 		vm.$http.get(url)
+		// 		.then((res) => {
+		// 			vm.courseArray = res.data.content.result;
+		// 			console.log(vm.courseArray);
+		// 		});
+		// 	});
+		// }
 		beforeRouteEnter (to, from, next) {
 			next(vm => {
 				vm.courseLoading = true;
 				vm.$indicator.open('加载中...');
-				let userID = vm.userinfo_data.userId;
+				console.log(vm.$store.state);
+				let lecturerId = vm.userinfo_data.lecturerId;
 				let id = localStorage.getItem('dataid');
 				let openid = localStorage.getItem('openid');
-				let url = vm.common_request_base_url + vm.common_request_appendv1_url + 'findcoursebyuserid?id=' + id + '&userId=' + userID + '&openid=' + openid;
+				let url = vm.common_request_base_url + vm.common_request_appendv1_url + 'findcoursebylecturerid?id=' + id + '&lecturerId=' + lecturerId + '&openid=' + openid;
 				console.log(url);
 				vm.$http.get(url)
 				.then((res) => {
@@ -109,6 +99,29 @@ import { mapState } from 'vuex';
 					this.getCourseImage();
 					this.$indicator.close();
 				};
+			}
+		},
+		methods: {
+			getCourseImage() {
+				let course_image_t = [];
+				let openid = localStorage.getItem('openid');
+				this.courseTempArray.forEach((b_item, b_index) => {
+					let x_url = this.common_request_base_url + this.common_request_appendv1_url + 'getossmedia?media=' + b_item.courseLogo + '&openid=' + openid;
+					this.$http.get(x_url)
+						.then((h_res) => {
+							b_item.courseLogo_url = h_res.data;
+							course_image_t[b_index] = b_item;
+							if(b_index >= this.courseTempArray.length-1){
+								this.courseArray = course_image_t;
+								console.log("this.courseArray");
+								console.log(this.courseArray);
+							}
+						})
+						.catch((error) => {
+	    					console.log(error);
+	    					this.$toast("获取课程列表图片异常");
+	  					});
+				});
 			}
 		}
 	};

@@ -25,32 +25,40 @@ const state = {
 		userHeadImage: '/d/a',
 		userCity: '南京',
 		userProvince: '江苏'
-	}
+	},
+	userinfo_data:{},
+	user_header_image:'',
+	user_logined:false
 };
 const getters = {
-	getUserName: function(state) {
-		return state.userName;
-	},
-	getOpenID: function(state) {
-		return state.openID;
-	},
-	getAccessToken: function(state) {
-		return state.access_token;
-	}
-};
-const actions = {
-	fetchUserInfoUserName ({commit, state}) {
-		// Vue.http.post('/api/web/v1/app/login', state.params)
-		// .then((res) => {
-		// 	// console.log(res);
-		// 	// console.log(res.content.error);
-		// 	commit('updateUserInfoUserName', 'wangmiao');
-		// }, (err) => {
-		// 	console.log(err);
-		// });
-	}
+	
+	userinfo : state => {
+        return {
+            userinfo_data : state.userinfo_data,
+            user_header_image : state.user_header_image
+        }
+    }
 };
 const mutations = {
+	INITUSERINFO(state,info){
+		state.userinfo_data = info;
+		console.log("INITUSERINFO");
+		console.log(info);
+		window.localStorage.setItem('userinfo', JSON.stringify(info));
+		console.log(window.localStorage.getItem('userinfo'));
+		state.user_logined = true;
+		localStorage.setItem('user_logined', true);
+
+	},
+	GETLOCALUSERINFO(state){
+		let user_info_str = window.localStorage.getItem('userinfo');
+		state.userinfo_data = JSON.parse(user_info_str); 
+		console.log(state.userinfo_data);
+		state.user_logined = true;
+	},
+	GETUSERHEADERIMAGE(state,value){
+		state.user_header_image = value;
+	},
 	updateUserInfoUserName(state, userName) {
 		state.userName = userName;
 	},
@@ -85,6 +93,19 @@ const mutations = {
 		state.lecturerId = lecturerId;
 	}
 };
+
+const actions = {
+	initUserInfo({commit},value){
+		commit("INITUSERINFO",value);
+	},
+	getLocalUserInfo({commit}){
+		commit("GETLOCALUSERINFO");
+	},
+	getUserHeaderImage({commit},value){
+		commit("GETUSERHEADERIMAGE",value);
+	}
+};
+
 
 export default {
 	state,

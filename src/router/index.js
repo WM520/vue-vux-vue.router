@@ -19,6 +19,7 @@ import LiveAudio from '@/components/liveaudio/liveaudio';
 import Teacher from '@/components/livedetail/teacher';
 import MineDetail from '@/components/mine/minedetail';
 import LiveRoom from '@/components/LiveRoom';
+import TeacherCourse from '@/components/mycourse/teachercourse';
 
 
 Vue.use(Router);
@@ -27,99 +28,104 @@ export default new Router({
   mode: 'history',
   routes: [
     {
-      path: '/',
+      path: '/wxapp',
       name: 'Home',
       component: Home
     },
     {
-      path: '/recent',
+      path: '/wxapp/recent',
       name: 'Recent',
       component: Recent
     },
     {
-      path: '/livedetail',
+      path: '/wxapp/livedetail',
       name: 'LiveDetail',
       component: LiveDetail
     },
     {
-      path: '/fightcourse',
+      path: '/wxapp/fightcourse',
       name: 'FightCourse',
       component: FightCourse
     },
     {
-      path: '/opportunity',
+      path: '/wxapp/livedetail/opportunity',
       name: 'Opportunity',
       component: Opportunity
     },
     {
-      path: '/myorder',
+      path: '/wxapp/myorder',
       name: 'MyOrder',
       component: MyOrder
     },
     {
-      path: '/introduction',
+      path: '/wxapp/introduction',
       name: 'Introduction',
       component: Introduction
     },
     {
-      path: '/feedback',
+      path: '/wxapp/feedback',
       name: 'FeedBack',
       component: FeedBack
     },
     {
-      path: '/mycourse',
+      path: '/wxapp/mycourse',
       name: 'MyCourse',
       component: MyCourse
     },
     {
-      path: '/myteacher',
+      path: '/wxapp/myteacher',
       name: 'MyTeacher',
       component: MyTeacher
     },
     {
-      path: '/mywallet',
+      path: '/wxapp/myteacher/mywallet',
       name: 'MyWallet',
       component: MyWallet
     },
     {
-      path: '/particulars',
+      path: '/wxapp/particulars',
       name: 'Particulars',
       component: Particulars
     },
     {
-      path: '/addbankcard',
+      path: '/wxapp/addbankcard',
       name: 'AddBankCard',
       component: AddBankCard
     },
     {
-      path: '/bankcard',
+      path: '/wxapp/bankcard',
       name: 'BankCard',
       component: BankCard
     },
     {
-      path: '/orderdetails',
+      path: '/wxapp/myorder/orderdetails',
       name: 'OrderDetails',
       component: OrderDetails
     },
     {
-      path: '/liveaudio',
+      path: '/wxapp/livedetail/liveaudio',
       name: 'LiveAudio',
       component: LiveAudio
     },
     {
-      path: '/teacher',
+      path: '/wxapp/teacher',
       name: 'Teacher',
       component: Teacher
     },
     {
-      path: '/minedetail',
+      path: '/wxapp/minedetail',
       name: 'MineDetail',
       component: MineDetail
     },
     {
-        path: '/liveroom',
+        path: '/wxapp/livedetail/liveroom',
         name: 'LiveRoom',
         component: LiveRoom
+    },
+    {
+      path: '/wxapp/myteacher/teachercourse',
+      name: 'TeacherCourse',
+      component: TeacherCourse
     }
   ]
 });

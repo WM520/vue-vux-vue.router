@@ -21,13 +21,7 @@ Vue.config.productionTip = false;
 Vue.component(infinite.name, infinite);
 //Vue.use(VueCookie);
 Vue.use(router);
-/* eslint-disable no-new */
-// const count = 1;
-Vue.directive('title', {
-  inserted: function (el, binding) {
-    document.title = el.dataset.title
-  }
-})
+
 
 
 
@@ -36,6 +30,5 @@ new Vue({
   router,
   store,
   template: '<App/>',
-  components: { App },
-  created() { this.$store.dispatch('fetchUserInfoUserName'); }
+  components: { App }
 });

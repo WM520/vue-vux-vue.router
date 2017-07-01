@@ -3,7 +3,7 @@
 
         <div class="question-list"  :style="{'max-height':question_list_max_height+'px','bottom':question_list_bottom+'px'}">
             <div class="question-list-header">
-                问题(20)
+                问题({{question_list_number}})
             </div>
             <div class="item-list">
                 <div class="item-question-box clearfix" v-for="question_item in myQuestionList">
@@ -16,7 +16,7 @@
                                 <span class="username">{{question_item.user.user_name}}</span>
                                 <span class="time">{{question_item.data.msg_time | formatDate}}</span>
                             </div>
-                            <div class="reply-btn">
+                            <div class="reply-btn" v-show="!isUser">
                                 回答
                             </div>
                         </div>
@@ -74,7 +74,7 @@
                                 <span class="username">{{question_item.user.user_name}}</span>
                                 <span class="time">{{question_item.data.msg_time | formatDate}}</span>
                             </div>
-                            <div class="reply-btn">
+                            <div class="reply-btn" v-show="!isUser">
                                 回答
                             </div>
                         </div>
@@ -141,9 +141,10 @@ export default {
             showMainQuestionStore: state => state.room.isShowMainQuestion,
             question_list_bottom : state => state.room.roomQuestionListBottom,
             question_list_max_height : state => state.room.roomQuestionListMaxHeight,
-            myQuestionList : state => state.chat.room_my_question_list,
-            questionList : state => state.chat.room_question_list,
-            isUser : state => state.footer.isUserFooter
+            myQuestionList : state => state.chat.current_room_my_question_list,
+            questionList : state => state.chat.current_room_question_list,
+            isUser : state => state.footer.isUserFooter,
+            question_list_number:state => state.chat.question_list_number
         })
     },
     components: {
@@ -233,6 +234,7 @@ export default {
                         .reply-btn{
                             float:right;
                             height:20px;
+                            line-height: 20px;
                             width:50px;
                             text-align: center;
                             font-size: 12px;

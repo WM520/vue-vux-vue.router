@@ -88,6 +88,10 @@ export default {
         uploadVoiceSuccess:function(res){
             let msg = {};
             msg.type=2;
+            msg.sendType=0;
+            if(this.isQuestionFooter){
+                msg.sendType = 2;
+            }
             //msg.content=this.msg_text_data;
             msg.content = res.serverId;
             this.$store.dispatch("sendMessage", msg);
@@ -153,6 +157,7 @@ export default {
             }
             let msg = {};
             msg.type=0;
+            msg.sendType=1;
             msg.content=this.question_msg_data;
             this.$store.dispatch("sendMessage", msg);
             this.question_msg_data='';
@@ -168,6 +173,10 @@ export default {
             }
             let msg = {};
             msg.type=0;
+            msg.sendType=0;
+            if(this.isQuestionFooter){
+                msg.sendType = 2;
+            }
             // msg.session_id = localStorage.getItem('dataid');
             msg.content=this.msg_text_data;
             this.$store.dispatch("sendMessage", msg);

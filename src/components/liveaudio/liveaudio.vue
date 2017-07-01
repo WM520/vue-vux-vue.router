@@ -2,21 +2,24 @@
 	<div class="liveaudio-wrap">
 		<!-- 顶部部分 -->
 		<div class="liveaudio-top-box">
-			<div class="liveaudio-play">
+<!-- 			<div class="liveaudio-play">
 				<div class="liveaudio-triangle"></div>
-			</div>
-			<img src="../../assets/Health.jpg" class="liveaudio-top-img">
+			</div> -->
+			<img :src="coverImg" class="liveaudio-top-img">
 		</div>
 
 		<!-- 进度条部分 -->
 		<div class="liveaudio-strip-box">
-			<a-player autoplay :music="{
+			<!-- <a-player autoplay :music="{
 			  title: 'Preparation',
 			  author: 'Hans Zimmer/Richard Harvey',
 			  url: 'http://devtest.qiniudn.com/Preparation.mp3',
 			  pic: 'http://devtest.qiniudn.com/Preparation.jpg'
-			}" @play="play" @end="end" class="liveaudio-audio"></a-player>
+			}" @play="play" @end="end" class="liveaudio-audio"></a-player> -->
+			<audio :src="musicUrl" controls="controls"></audio>
+			<span class="liveaudio-downCover"></span>
 		</div>
+
 		
 		<div class="liveaudio-comment-box">
 			<img src="../../assets/comment.png" class="liveaudio-comment-img">
@@ -24,13 +27,13 @@
 		</div>
 		
 		<!-- 用户信息部分 -->
-		<ul>
-			<li v-for="item in liveAudioList">
+		<ul :style="{'height':commentlist_height+'px'}" ref="commentlistScroll">
+			<li v-for="item in commentList">
 				<div class="liveaudio-user-box">
-					<img src="../../assets/LF.jpg" class="liveaudio-user-img">
-					<span class="liveaudio-userName">微信名</span>
-					<span class="liveaudio-user-time">2017-03-15&nbsp;12:36</span>
-					<div class="liveaudio-text">五谷为养、五果为助、五畜为益、五菜为冲,气味合而服之,以补精益气</div>
+					<img :src="item.userHeadImage_url" class="liveaudio-user-img">
+					<span class="liveaudio-userName">{{item.userNickname}}</span>
+					<span class="liveaudio-user-time">{{ item.messageSendTime * 1000 | formatDate }}</span>
+					<div class="liveaudio-text">{{item.messageContent}}</div>
 				</div>
 			</li>
 		</ul>
@@ -38,39 +41,82 @@
 
 		<!-- 底部输入部分 -->
 		<div class="liveaudio-sendOut-box">
-			<input type="text" class="liveaudio-input">
+			<input type="text" class="liveaudio-input" v-model="messageContent">
 			<!-- 发送按钮部分 -->
 			<div class="liveaudio-btn" @click="sender">发送</div>
 		</div>
-		<infinite-scroll :scroller="scroller" :loading="loading" @load="loadMore"/>
 
 	</div>
 </template>
 <script type="text/javascript">
 	// import { Range } from 'vux';
 	import VueAplayer from 'vue-aplayer';
+	import { mapState } from 'vuex';
+	import {formatDate} from '../../utils/datetime.js'
 	export default{
+		 computed: {
+		    ...mapState({
+		        common_request_base_url: state => state.common.common_request_base_url,
+		        common_request_appendv1_url: state => state.common.common_request_appendv1_url,
+		        userinfo_data : state => state.UserInfo.userinfo_data
+		    })
+    	},
 		components: {
 			// Range
 			'a-player': VueAplayer
 		},
 		data() {
 			return {
-				data1: 0,
-				data2: 100,
-				scroller: null,
-				loading: false,
+				coverImg: '',
+				musicUrl: '',
 				liveAudioList: [{}, {}, {}, {}, {}],
 				courseDetail: {
 					type: Object
-				}
+				},
+				loading: true,
+				commentTempList: [],
+				commentList: [],
+				messageContent: '',
+				reloading: false,
+				commentlist_height:document.body.clientHeight-320
 			};
 		},
 		methods: {
 			onChange() {
 				alert('111');
 			},
+			// 发送评论
 			sender() {
+				var params = {
+					id: localStorage.getItem('dataid'),
+					messageRoomId: this.$route.params.room.roomId,
+					messageUserId: this.$store.state.UserInfo.userinfo_data.userId,
+					messageType: '0',
+					messageSendType: '3',
+					messageContent: this.messageContent,
+					openid: localStorage.getItem('openid'),
+				};
+				var qs = require('qs');
+				console.log(params);
+				let url = this.common_request_base_url + this.common_request_appendv1_url + 'saveroommessage';
+				this.$http.post(url, qs.stringify(params),{
+				 headers: {
+    				'Content-Type': 'application/x-www-form-urlencoded',
+  				}
+				}).then((res) => {
+					let tag = res.data.content.is_success;
+					if (tag === true) {
+						this.reloading = true;
+						let id = localStorage.getItem('dataid');
+						let openid = localStorage.getItem('openid');
+						let url = this.common_request_base_url + this.common_request_appendv1_url +'findmessagesbyroomidandtype?id=' + id + '&openid=' + openid + '&roomId=' + this.$route.params.room.roomId + '&messageType=' + '3';
+						this.$http.get(url)
+						.then((res) => {	
+							this.commentTempList = res.data.content.result;
+							this.reloading = false;
+						})
+					};
+				});
 				console.log('发送语音');
 			},
 			loadMore() {
@@ -80,23 +126,108 @@
 					vue.getList();
 				}, 500);
 			},
-			getList() {
-				for (var i = 0; i < 5; i++) {
-					var item = i;
-					this.liveAudioList.push(item);
-				};
-				this.loading = false;
-			},
 			play() {
 				console.log('开始播放音乐');
 			},
 			end() {
 				console.log('播放结束');
+			},
+			getCoverImage() {
+				let id = localStorage.getItem('dataid');
+		        let openid = localStorage.getItem('openid');
+		        let url = this.common_request_base_url + this.common_request_appendv1_url + 'getossmedia' + '?media=' + this.$route.params.room.roomImgUrl + '&openid=' + openid;
+		        this.$http.get(url)
+		        .then((res) => {
+		        	this.coverImg = res.data;
+		        })
+		        .catch((error) => {
+		        	this.$toast('获取背景图失败');
+		        })
+			},
+			getMusicUrl() {
+				let id = localStorage.getItem('dataid');
+		        let openid = localStorage.getItem('openid');
+		        let url = this.common_request_base_url + this.common_request_appendv1_url + 'getossmedia' + '?media=' + this.$route.params.room.roomFileUrl + '&openid=' + openid;
+		        this.$http.get(url)
+		        .then((res) => {
+		        	this.musicUrl = res.data;
+		        })
+		        .catch((error) => {
+		        	this.$toast('获取音频失败');
+		        })
+			},
+			getCommentList() {
+				let course_image_t = [];
+				this.commentTempList.forEach((b_item, b_index) => {
+					let openid = localStorage.getItem('openid');
+					let id = localStorage.getItem('dataid');
+					let x_url = this.common_request_base_url + this.common_request_appendv1_url + 'getossmedia?media=' + b_item.userHeadImage + '&openid=' + openid + '&id=' + id;
+					this.$http.get(x_url)
+						.then((h_res) => {
+							b_item.userHeadImage_url = h_res.data;
+							course_image_t[b_index] = b_item;
+							if(b_index >= this.commentTempList.length-1){
+								this.commentList = course_image_t;
+								console.log("this.commentList");
+								console.log(this.commentList);
+							}
+						})
+						.catch((error) => {
+	    					console.log(error);
+	    					this.$toast("获取评论列表图片异常");
+	  					});
+				});
 			}
 		},
-		mounted() {
-			this.scroller = this.$el;
-		}
+		beforeRouteEnter (to, from, next) {
+			next((vm) => {
+				vm.loading = true;
+				vm.$indicator.open('加载中...');
+				let id = localStorage.getItem('dataid');
+				let openid = localStorage.getItem('openid');
+				let url = vm.common_request_base_url + vm.common_request_appendv1_url +'findmessagesbyroomidandtype?id=' + id + '&openid=' + openid + '&roomId=' + vm.$route.params.room.roomId + '&messageType=' + '3';
+				console.log(url);
+				vm.$http.get(url)
+				.then((res) => {
+					console.log(res);
+					if (res.data.content.result.length !== 0) {
+						vm.commentTempList = res.data.content.result;
+					};
+					vm.loading = false;
+
+				})
+				.catch((error) => {
+
+				});
+			})
+		},
+		watch: {
+			loading() {
+				if (this.loading === false) {
+					this.getCoverImage();
+					this.getMusicUrl();
+					this.getCommentList();
+					this.$indicator.close();
+				};
+			},
+			reloading() {
+				if (this.reloading === false && this.commentTempList.length >= 1) {
+					this.getCommentList();
+				};
+			},
+			commentList() {
+				this.$nextTick(()=>{
+	                this.$refs.commentlistScroll.scrollTop = this.$refs.commentlistScroll.scrollHeight;
+	            });
+
+			}
+		},
+		filters: {
+	        formatDate(time) {
+	            var date = new Date(time);
+	            return formatDate(date, 'yyyy-MM-dd hh:mm');
+	        }
+    	}
 	};
 
 </script>
@@ -107,9 +238,10 @@
 	.liveaudio-wrap{
 		width: 100vw;
 		height: 100vh;
-		overflow: auto;
-		transition: transform 0.3s ease;
-		-webkit-overflow-scrolling: touch;
+	}
+	.liveaudio-wrap ul {
+		width:100%;
+		overflow-y: auto;
 	}
 
 	/*顶部部分*/
@@ -151,7 +283,7 @@
 	/*进度条部分*/
 	.liveaudio-strip-box{
 		width:100%;
-		height:70px;
+		height:32px;
 		position:relative;
 		/*border-bottom:1px solid #e5e5e5;*/
 		background-color:white;
@@ -302,5 +434,24 @@
 	}*/
 	.liveaudio-audio{
 		margin:0px !important;
+	}
+
+
+
+	audio{
+		width:100% !important;
+		/*margin:0 !important;*/
+		border-radius:0 !important;
+		box-shadow:none !important;
+	}
+
+	/*audio下载遮盖部分*/
+	.liveaudio-downCover{
+		width:40px;
+		height:32px;
+		background-color:#FAFAFA;
+		position:absolute;
+		top:0;
+		right:0;
 	}
 </style>
